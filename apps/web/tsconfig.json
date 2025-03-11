@@ -19,6 +19,6 @@
     "next-env.d.ts",
     "next.config.js",
     ".next/types/**/*.ts"
-  ],
+, "app/_chatbot/Three/bug.jsx"  ],
   "exclude": ["node_modules"]
 }

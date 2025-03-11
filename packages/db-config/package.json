@@ -6,7 +6,8 @@
     "./client": "./src/client.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "ts-node src/vectorDb/vector.ts"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*"
@@ -16,6 +17,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.4.1"
+    "@datastax/astra-db-ts": "^1.5.0",
+    "@langchain/community": "^0.3.34",
+    "@prisma/client": "^6.4.1",
+    "dotenv": "^16.4.7",
+    "langchain": "^0.3.19",
+    "openai": "^4.86.2",
+    "puppeteer": "^24.4.0",
+    "ts-node": "^10.9.2"
   }
 }
