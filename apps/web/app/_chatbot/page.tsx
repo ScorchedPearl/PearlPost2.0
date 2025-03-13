@@ -48,16 +48,16 @@ const ChatBot = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
 
     setIsTyping(true);
     append({ role: "user", content: input });
-    setInput("");
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ messages: [...messages, { role: 'user', content: input }] }),
     });
+    setInput("");
     const data = await response.json();
     append({ role: 'assistant', content: data.message.content });
     setIsTyping(false);

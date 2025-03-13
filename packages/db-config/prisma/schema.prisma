@@ -13,6 +13,7 @@ model User {
   email           String  @unique
   password        String?
   profileImageURL String?
+  title           String?
   likes           Like[]
 
   createdAt DateTime @default(now())
@@ -30,10 +31,8 @@ model User {
 
 model Post {
   id        String    @id @default(cuid())
-  title     String
   content   String
-  imageURL  String
-  tags      Tag[]     @relation("PostTags")
+  imageURL  String?
   published Boolean   @default(false)
   likes     Like[]
   comments  Comment[]
@@ -63,7 +62,6 @@ model Comment {
   public    Boolean  @default(false)
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
-  tags      Tag[]    @relation("DiaryTags")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   post      Post     @relation(fields: [postId], references: [id])
@@ -71,13 +69,6 @@ model Comment {
   replies   Reply[]
 }
 
-model Tag {
-  id       String    @id @default(cuid())
-  title    String    @unique
-  comments Comment[] @relation("DiaryTags")
-  posts    Post[]    @relation("PostTags")
-  replies  Reply[]   @relation("ReplyTags")
-}
 
 model Follows {
   follower   User   @relation("followers", fields: [followerid], references: [id])
@@ -101,5 +92,4 @@ model Reply {
   public    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  tags      Tag[]    @relation("ReplyTags")
 }

@@ -3,11 +3,11 @@ import { GetCurrentUserQuery, GetCurrentUserQueryVariables } from "gql/graphql";
 import {   getCurrentUserQuery } from "graphql/query/user";
 import { graphqlClient } from "@providers/graphqlClient/index";
 
-export const useGetCurrentUser = () => {
- const query = useQuery({
+export const useCurrentUser = () => {
+ const query = useQuery<GetCurrentUserQuery,GetCurrentUserQueryVariables>({
   queryKey: ["getCurrentUser"],
   queryFn: async () => {
-    const data = await graphqlClient.request<GetCurrentUserQuery,GetCurrentUserQueryVariables>(getCurrentUserQuery as any);
+    const data = await graphqlClient.request(getCurrentUserQuery);
     return data;
   }
  });

@@ -12,6 +12,7 @@ export const getCurrentUserQuery = graphql(`#graphql
     profileImageURL
     email
     id
+    title
   }
 }
 `)

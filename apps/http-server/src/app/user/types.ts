@@ -13,5 +13,6 @@ type User{
  email:String!
  name:String!
  profileImageURL:String
+ title:String
 }
 `

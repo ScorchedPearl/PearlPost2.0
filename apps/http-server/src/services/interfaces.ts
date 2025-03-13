@@ -9,6 +9,11 @@ export interface GoogleTokenResult {
 export interface JWTPayload extends JWTUser{
  [key: string]: any; 
 }
+export interface ImageSignedURLPayload{
+ imageType:string;
+ imageName:string;
+ ctx:GraphqlContext;
+}
 export type User = {
  id: string;
  email: string;
