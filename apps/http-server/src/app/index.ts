@@ -32,7 +32,8 @@ export async function initServer(){
         ...User.resolvers.mutations,
         ...Post.resolvers.mutations
        },
-       ...Post.resolvers.authorResolvers
+       ...Post.resolvers.authorResolvers,
+       ...User.resolvers.PostResolvers
     },
   });
   await server.start();

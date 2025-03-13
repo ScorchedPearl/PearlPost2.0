@@ -1,14 +1,13 @@
 "use client"
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "./_PostApp/navbar";
-import ProfileCard from "./../dashboard/_profile/profileCard";
+import { ProfileCard } from "app/dashboard/_profile/profileCard";
 import CreatePost from "./_PostApp/creatPost";
 import { PostCard }from "./_PostApp/postcard";
 import RightSidebar from "./_PostApp/rightSidebar";
 import PostSkeleton from "./_PostApp/skeleton";
 import Stories from "./_PostApp/stories";
 import Suggestions from "./_PostApp/suggestions";
-import { mockPosts } from "@ui/lib/mockdata";
 import { useIsMobile } from "@hooks/isMobile";
 import ChatBot from "app/_chatbot/page";
 import { useCurrentUser } from "@hooks/user";
@@ -19,8 +18,10 @@ const Index: React.FC = () => {
   const isMobile = useIsMobile();
   const {user,isLoading}=useCurrentUser();
   const {posts,isLoading2}=useGetPosts(); 
+
   if(!isLoading2&&isLoad){
     setIsLoading(false);
+    console.log(posts);
   }
   if(isLoading){
     return <Loader></Loader>
@@ -29,11 +30,11 @@ const Index: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Header user={user}/>
       
-      <main className="pt-24 pb-16 px-4 md:px-6 max-w-7xl mx-auto">
+      <main className="pt-24 pb-16 px-4 md:px-6 max-w-7xl mx-auto ">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {!isMobile && (
             <div className="lg:col-span-3">
-              <div className="sticky top-24 space-y-4">
+              <div className="sticky top-24 space-y-">
                 <ProfileCard user={user} />
                 <Stories />
               </div>
@@ -51,7 +52,7 @@ const Index: React.FC = () => {
               </>
             ) : (
               posts.map((post, index) => (
-                <PostCard key={post.id} post={post} delay={index} />
+                <PostCard key={post.id} post={post} delay={index} user={user} />
               ))
             )}
           </div>
@@ -59,7 +60,7 @@ const Index: React.FC = () => {
           {!isMobile && (
             <div className="lg:col-span-3">
               <div className="sticky top-24 space-y-4">
-                <Suggestions />
+                <Suggestions user={user}/>
                 <RightSidebar />
               </div>
             </div>

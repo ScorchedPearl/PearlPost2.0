@@ -8,12 +8,7 @@ export const getAllPostsQuery = graphql(`#graphql
       imageURL
       createdAt
       updatedAt
-      likes {
-        postId
-        userId
-        createdAt
-        id
-      }
+      
       author {
         name
         profileImageURL
@@ -21,6 +16,12 @@ export const getAllPostsQuery = graphql(`#graphql
         title
         email
       }
+    likes {
+      user {
+        name
+      }
+      userId
+    }
     }
   }
 `);

@@ -1,6 +1,5 @@
 export const types=`#graphql
-  type Like {
-    id: ID!         
+  type Like {       
     createdAt: DateTime     
     userId: String     
     postId: String      

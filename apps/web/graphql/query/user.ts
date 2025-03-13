@@ -8,11 +8,41 @@ query Query($email: String!, $password: String!) {
 export const getCurrentUserQuery = graphql(`#graphql
  query GetCurrentUser {
   getCurrentUser {
+    id
     name
     profileImageURL
-    email
-    id
     title
+    email
+    posts {
+      content
+      likes {
+        user {
+          name
+        }
+      }
+      imageURL
+    }
+    recommendedUsers {
+      name
+      title
+      followers {
+        profileImageURL
+        name
+        title
+      }
+      profileImageURL
+    }
+    following {
+        name
+        profileImageURL
+        title
+        id
+    }
+    followers {
+      name
+      title
+      profileImageURL
+    }
   }
 }
 `)

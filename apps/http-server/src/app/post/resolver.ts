@@ -1,5 +1,5 @@
 import { prismaClient } from "@repo/db-config/client";
-import { GraphqlContext } from "../../services/interfaces";
+import { GraphqlContext, Post } from "../../services/interfaces";
 import PostService from "../../services/postService";
 import { CreatePostPayload } from "./types";
 
@@ -25,12 +25,11 @@ const mutations={
 };
 const authorResolvers={
   Post:{
-    author:(parent)=>{
-      return prismaClient.user.findUnique({
-        where:{
-          id:parent.authorId
-        }
-      })
+    author:async(parent:Post)=>{
+      return await PostService.getAuthor(parent);
+    },
+    likes:async (parent:Post)=>{
+      return await PostService.getLikes(parent);
     }
   }
 }

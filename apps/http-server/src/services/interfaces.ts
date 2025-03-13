@@ -21,6 +21,7 @@ export type User = {
  password: string|null;
  createdAt: Date;
  updatedAt: Date;
+ posts?:Post[]
 }
 export interface JWTUser{
  id: string;
@@ -30,4 +31,20 @@ export interface JWTUser{
 }
 export interface GraphqlContext{
  user?: JWTUser
+}
+export interface Post{
+  id: string
+  content: string
+  imageURL?: string
+  createdAt: Date
+  updatedAt: Date
+  author: User
+  likes: Like[]
+}
+export interface Like{       
+  createdAt: Date  
+  userId: string     
+  postId: string      
+  user: User         
+  post: Post         
 }

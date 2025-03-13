@@ -18,9 +18,8 @@ import { Input } from "@ui/components/ui/input";
 import UserAvatar from "./avatar";
 import { useIsMobile } from "@hooks/isMobile";
 import { usePathname } from "next/navigation"; 
-import { User } from "gql/graphql";
 
-export default function Header({user}:{user:User}) {
+export default function Header({user}) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();

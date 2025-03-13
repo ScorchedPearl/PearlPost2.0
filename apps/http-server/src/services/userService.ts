@@ -1,6 +1,6 @@
 import axios from "axios";
 import { prismaClient } from "@repo/db-config/client";
-import { GoogleTokenResult } from "./interfaces.js"
+import { GoogleTokenResult, User } from "./interfaces.js"
 import JWTService from "./jwtService.js";
 import { CreateCredentialsTokenType, VerifyCredentialsTokenType } from "../app/user/types.js";
 import { SignInSchema } from "@repo/common-config/types";
@@ -86,6 +86,21 @@ class UserService {
   const user=await prismaClient.user.findUnique({
    where:{
     id:id,
+   },
+   include:{
+    posts: {
+      include:{
+        likes:{
+          include:{
+            user:true
+          }
+        }
+      },
+    },
+    likes:true,
+    followers:true,
+    following:true,
+    comments:true,
    }
   })
   if(!user){
@@ -137,5 +152,105 @@ class UserService {
   })
   return true;
  }
+ public static async followUser(from: string,to :string){
+  await prismaClient.follows.create({
+    data:{
+      follower:{connect:{id:from}},
+      following:{connect:{id:to}},
+    }
+  })
+  // await redisClient.del(`recommendedUsers:${ctx.user.id}`);
+  return;
+ }
+ public static async unfollowUser(from: string,to :string){
+  await prismaClient.follows.delete({
+    where:{
+      followerid_followingid:{
+        followerid:from,
+        followingid:to,
+      }
+    }
+  })
+  // await redisClient.del(`recommendedUsers:${ctx.user.id}`);
+  return ;
+ }
+ public static async likePost(user:string,post:string){
+  return await prismaClient.like.create({
+    data:{
+      user:{connect:{id:user}},
+      post:{connect:{id:post}},
+    }
+  })
+ }
+ public static async UnlikePost(user:string,post:string){
+  return await prismaClient.like.delete({
+    where:{
+      unique_user_post_like:{
+        userId:user,
+        postId:post,
+      }
+    }
+  })
+ }
+ public static async getFollowers(id:string){
+  const result= await prismaClient.follows.findMany(
+         { 
+           where:{following:{id:id}},
+           include:{
+             follower:true,
+             following:true,
+           }
+         }
+       )
+  return result.map(el=>el.follower)
+  }
+  public static async getFollowing(id:string){
+    const result= await prismaClient.follows.findMany(
+           { 
+             where:{follower:{id:id}},
+             include:{
+               follower:true,
+               following:true,
+             }
+           }
+         )
+    return result.map(el=>el.following)
+  }
+  public static async getRecommendedUsers(id:string){
+    // const cachedValue=await redisClient.get(`recommendedUsers:${id}`);
+     // if(cachedValue) return JSON.parse(cachedValue);
+     const myFollowing= await prismaClient.follows.findMany({
+      where:
+      {follower:
+        { id: id }
+      },
+      include:{
+        following:{
+          include:{
+            followers:{
+              include:{
+                following:true
+                  }
+                }
+              }
+            }
+      }
+    });
+    const userToRecommend:User[]=[];
+    for(const followings of myFollowing){
+      for(const follower of followings.following.followers){
+        if(follower.following.id!==id&&myFollowing.findIndex(e=>e.followingid===follower.following.id)<0){
+          userToRecommend.push(follower.following);
+        }
+      }
+    }
+    const uniqueArray = userToRecommend.filter(
+      (item, index, self) =>
+        index === self.findIndex(other => other.id === item.id)
+    );
+
+    // await redisClient.set(`recommendedUsers:${id}`,JSON.stringify(uniqueArray));
+    return uniqueArray;
+  }
 }
 export default UserService;

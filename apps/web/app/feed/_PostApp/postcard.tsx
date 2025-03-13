@@ -1,18 +1,55 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Share2, MoreVertical, Code2, Cpu, Globe2, Sparkles } from 'lucide-react';
-import { Post } from 'gql/graphql';
+import { Heart, MessageCircle, Share2, MoreVertical, Code2, Cpu, Globe2, Sparkles, UserCheck, UserPlus } from 'lucide-react';
+import { Post, User } from 'gql/graphql';
+import { followUserMutation, likePostMutation, unfollowUserMutation, unlikePostMutation } from 'graphql/mutation/user';
+import { graphqlClient } from '@providers/graphqlClient';
+import { useQueryClient } from '@tanstack/react-query';
 
-export function PostCard({ post,delay }: { post: Post; delay: number }) {
-  const [isLiked, setIsLiked] = useState(false);
+export function PostCard({ post,delay,user }: { post: Post; delay: number,user:User }) {
+  const amiLiked = useMemo(() => post.likes.some(liker => liker.userId === user.id), [user?.id, post]);
+  const isFollowing = useMemo(() => user.following.some(f => f.id === post.author.id) ?? false, [user, post.author.id]);
+  const [isLiked, setIsLiked] = useState(amiLiked);
+  const [following, setFollowing] = useState(isFollowing);
   const [likes, setLikes] = useState<number>(post.likes.length);
   const [isHovered, setIsHovered] = useState(false);
-
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes((prev: number) => (isLiked ? prev - 1 : prev + 1));
-  };
-
+  useEffect(() => setIsLiked(amiLiked), [amiLiked,isLiked]);
+  useEffect(() => setFollowing(isFollowing), [isFollowing,following]);
+  const queryClient=useQueryClient();
+  const handleLikePost=useCallback(async()=>{
+    if(!post?.id) return;
+    else{
+      await graphqlClient.request(likePostMutation as any,{likePostId:post.id})
+      await queryClient.invalidateQueries(["current-user",post?.id]as any)
+      setIsLiked(!isLiked);
+      setLikes((prev: number) => (prev + 1));
+    }
+  },[queryClient,post?.id])
+  const handleUnlikePost=useCallback(async()=>{
+    if(!post?.id) return;
+    else{
+      await graphqlClient.request(unlikePostMutation as any,{unlikePostId:post.id})
+      await queryClient.invalidateQueries(["current-user",post?.id]as any)
+      setIsLiked(!isLiked);
+      setLikes((prev: number) => ( prev - 1 ));
+    }
+  },[queryClient,post?.id])
+  const handleFollowUser=useCallback(async()=>{
+    if(!user.id) return;
+    else{
+      await graphqlClient.request(followUserMutation as any,{to:post.author.id})
+      await queryClient.invalidateQueries(["current-user",user.id]as any)
+      setFollowing(!isFollowing);
+    }
+  },[queryClient,user.id])
+  const handleUnfollowUser=useCallback(async()=>{
+    if(!user.id) return;
+    else{
+      await graphqlClient.request(unfollowUserMutation as any,{to:post.author.id})
+      await queryClient.invalidateQueries(["current-user",user.id]as any)
+      setFollowing(!isFollowing);
+    }
+  },[queryClient,user.id])
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -52,9 +89,15 @@ export function PostCard({ post,delay }: { post: Post; delay: number }) {
             </p>
           </div>
         </div>
+        <div className='flex space-x-2'>
+        {post.author.id!==user.id&&<button onClick={following ? handleUnfollowUser : handleFollowUser} className="p-2 bg-indigo-500/10 rounded-full hover:bg-indigo-500/20">
+            {following ? <UserCheck className="w-5 h-5 text-indigo-400" /> : <UserPlus className="w-5 h-5 text-indigo-400" />}
+          </button>
+        }
         <button className="p-2 hover:bg-indigo-500/10 rounded-full transition-all duration-300 hover:rotate-90">
           <MoreVertical className="w-5 h-5 text-indigo-200" />
         </button>
+        </div>
       </div>
 
       <div className="px-4 py-2">
@@ -83,7 +126,7 @@ export function PostCard({ post,delay }: { post: Post; delay: number }) {
 
       <div className="px-4 py-2 flex items-center justify-around backdrop-blur-sm bg-black/5">
         <button
-          onClick={handleLike}
+          onClick={isLiked?handleUnlikePost:handleLikePost}
           className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
             isLiked
               ? 'text-red-400 hover:bg-red-500/10'

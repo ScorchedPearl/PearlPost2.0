@@ -14,5 +14,10 @@ type User{
  name:String!
  profileImageURL:String
  title:String
+ posts:[Post]
+ likes:[Like]
+ recommendedUsers:[User]
+ followers:[User]
+ following:[User]
 }
 `

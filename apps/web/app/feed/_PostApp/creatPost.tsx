@@ -6,11 +6,12 @@ import axios from "axios";
 import {  useQueryClient } from "@tanstack/react-query";
 import { createPostMutation } from "graphql/mutation/post";
 import UserAvatar from "./avatar";
-import { Calendar, FileText, Video, Image } from "lucide-react";
+import { Calendar, FileText, Video, Image ,Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@ui/components/ui/button";
 const CreatePost = ({ user }) => {
   const [postText, setPostText] = useState("");
   const [imageurl, setImageurl] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const fileInputRefs = useRef({
     photos: null,
     videos: null,
@@ -44,7 +45,18 @@ const CreatePost = ({ user }) => {
     }   
   }
   };
-
+  const handleEnhanceMent = async() => {
+    setIsTyping(true);
+    const response = await fetch('/api/enhance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: postText }),
+    });
+    const data = await response.json();
+    setPostText(data.ans.content);
+    console.log(data.ans);
+    setIsTyping(false);
+  }
   const handleEventCreation = () => {
     const eventName = prompt("Enter event name:");
   };
@@ -77,7 +89,7 @@ const CreatePost = ({ user }) => {
             />
           </div>
         </div>
-
+        
         <div className="flex mt-4 justify-between">
           <div className="flex space-x-2">
             <PostButton
@@ -107,15 +119,28 @@ const CreatePost = ({ user }) => {
           <Button
             type="submit"
             size="sm"
-            disabled={!postText.trim()}
+            disabled={!postText}
             className="bg-primary hover:bg-primary/90 text-white px-4 rounded-full transition-opacity duration-200 bg-blue-400 fixed right-8.5"
+            onClick={handleSubmit}
           >
-            Post
+            {isTyping ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                "Post"
+            )}
           </Button>
+          
         </div>
         </div>
       </form>
-
+      <Button
+            size="sm"
+            disabled={!postText}
+            className="bg-primary hover:bg-primary/90 text-white px-4 rounded-full transition-opacity duration-200 bg-amber-400 fixed right-6 top-7"
+            onClick={handleEnhanceMent}
+          >
+            Enhance<Sparkles></Sparkles>
+          </Button>
       <input
         type="file"
         accept="image/*"

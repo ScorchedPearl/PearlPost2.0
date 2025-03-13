@@ -14,7 +14,7 @@ model User {
   password        String?
   profileImageURL String?
   title           String?
-  likes           Like[]
+  likes           Like[]  
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
