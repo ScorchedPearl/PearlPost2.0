@@ -6,6 +6,7 @@ import { expressMiddleware } from '@apollo/server/express4';
 import JWTService from "../services/jwtService";
 import { User } from "./user";
 import { Post } from "./post";
+import { Room } from "./room";
 export async function initServer(){
   const app=express();
   app.use(cors());
@@ -14,26 +15,34 @@ export async function initServer(){
    typeDefs:`
    ${User.Types}
    ${Post.types}
+   ${Room.types}
    type Query{
      ${User.queries}
      ${Post.query}
+     ${Room.query}
    }
    type Mutation{
      ${User.mutations}
      ${Post.mutations}
+     ${Room.mutations}
    }
     `,
     resolvers:{
       Query:{
         ...User.resolvers.queries,
-        ...Post.resolvers.queries
+        ...Post.resolvers.queries,
+        ...Room.resolvers.queries
        },
        Mutation:{
         ...User.resolvers.mutations,
-        ...Post.resolvers.mutations
+        ...Post.resolvers.mutations,
+        ...Room.resolvers.mutations
        },
-       ...Post.resolvers.authorResolvers,
-       ...User.resolvers.PostResolvers
+       ...Post.resolvers.PostResolvers,
+       ...User.resolvers.UserResolvers,
+       ...Room.resolvers.RoomResolvers,
+       ...Room.resolvers.MessageResolvers,
+       ...Room.resolvers.ReactionResolvers,
     },
   });
   await server.start();

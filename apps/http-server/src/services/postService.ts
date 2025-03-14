@@ -75,29 +75,10 @@ class PostService {
     await redisClient.del("posts");
     return post;
   }
-  public static async changePassword(email: string, newPassword: string) {
-    const user = await prismaClient.user.findUnique({
-      where: {
-        email: email,
-      },
-    });
-    if (!user) {
-      throw new Error("User not found");
-    }
-    await prismaClient.user.update({
-      where: {
-        email: email,
-      },
-      data: {
-        password: newPassword,
-      },
-    });
-    return true;
-  }
   public static async getAuthor(post: any) {
     return await prismaClient.user.findUnique({
       where:{
-        id:post.author.id
+        id:post.authorId
       }
     })
   }

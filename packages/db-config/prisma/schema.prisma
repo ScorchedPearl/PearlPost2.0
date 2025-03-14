@@ -19,6 +19,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  rooms            Room[]
+  messages         Message[]
+  reactions        Reaction[]
   posts            Post[]
   comments         Comment[]
   replies          Reply[]
@@ -36,6 +39,7 @@ model Post {
   published Boolean   @default(false)
   likes     Like[]
   comments  Comment[]
+  reactions Reaction[]
 
   author   User   @relation(fields: [authorId], references: [id] )
   authorId String
@@ -90,6 +94,42 @@ model Reply {
   imageUrl  String?
   date      DateTime
   public    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Message{
+  id        String   @id @default(cuid())
+  text      String?
+  imageUrl  String?
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id])
+  reactions  Reaction[]
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Reaction{
+  id        String   @id @default(cuid())
+  type      String
+  messageId  String?
+  message    Message?  @relation(fields: [messageId], references: [id])
+  postId     String?
+  post       Post?     @relation(fields: [postId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room{
+  id        String   @id @default(cuid())
+  name      String?
+  avatar    String?
+  users     User[]
+  messages  Message[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

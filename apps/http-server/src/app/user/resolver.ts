@@ -58,7 +58,7 @@ unlikePost:async (parent:any,{id}:{id:string},ctx:GraphqlContext)=>{
   return true;
 }
 }
-const PostResolvers={
+const UserResolvers={
  User:{
    posts:async (parent:User)=>{
      return await prismaClient.post.findMany({where:{authorId:parent.id}})
@@ -78,4 +78,4 @@ const PostResolvers={
    }
  }
 }
-export const resolvers={queries,mutations,PostResolvers};
+export const resolvers={queries,mutations,UserResolvers};

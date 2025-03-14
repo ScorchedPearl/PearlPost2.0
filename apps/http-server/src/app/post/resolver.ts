@@ -23,7 +23,7 @@ const mutations={
     return PostService.createPost(payload,ctx);
   },
 };
-const authorResolvers={
+const PostResolvers={
   Post:{
     author:async(parent:Post)=>{
       return await PostService.getAuthor(parent);
@@ -33,4 +33,4 @@ const authorResolvers={
     }
   }
 }
-export const resolvers={mutations,authorResolvers,queries};
+export const resolvers={mutations,PostResolvers,queries};

@@ -5,9 +5,9 @@ import { StatsGrid } from "./_profile/statsGrid";
 import { EngagementChart } from "./_profile/engagementChart";
 import { ProfileCard } from "./_profile/profileCard";
 import { ActivityFeed } from "./_profile/activityFeed";
-import { Progress } from "@ui/components/ui/progress";
 import { toast } from "sonner";
 import { useCurrentUser } from "@hooks/user";
+import Loader from "app/loading";
 const Index = () => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -40,19 +40,7 @@ const Index = () => {
 
   if (loading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="w-full max-w-xs space-y-4">
-          <div className="space-y-2 text-center">
-            <h1 className="text-xl font-medium text-gradient animate-pulse">
-              Pulse
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Loading your dashboard
-            </p>
-          </div>
-          <Progress value={progress} className="h-1 bg-secondary" />
-        </div>
-      </div>
+      <Loader></Loader>
     );
   }
 

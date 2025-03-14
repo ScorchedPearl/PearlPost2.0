@@ -117,7 +117,7 @@ export default function Navbar(props) {
               {features.map((feature) => (
                 <a
                   key={feature.name}
-                  href="#"
+                  onClick={()=>router.push(feature.href)}
                   className="block px-2 py-2 text-white/80 hover:text-cyan-400 transition-colors"
                 >
                   <div className="flex items-center">
@@ -132,13 +132,22 @@ export default function Navbar(props) {
             </a>
           </div>
           
-          <div className="space-y-3 pt-4 border-t border-white/10">
-            <button className="w-full px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl shadow-lg hover:shadow-cyan-500/25 active:scale-95 transition-all duration-200 font-medium" onClick={()=>router.push("/auth")}>
-              Login
-            </button>
-          </div>
+          {!props.user?<div className="space-y-3 pt-4 border-t border-white/10">
+              <button className="w-full px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl shadow-lg hover:shadow-cyan-500/25 active:scale-95 transition-all duration-200 font-medium" onClick={()=>router.push("/auth")}>
+                Login
+              </button>
+            </div>:<div className="flex items-center space-x-4">
+              <button className="w-full px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl shadow-lg hover:shadow-cyan-500/25 active:scale-95 transition-all duration-200 font-medium" onClick={()=>{
+                localStorage.removeItem("__Pearl_Token");
+                router.push("/auth")
+              }}>
+                SignOut
+              </button>
+              </div>
+}
         </div>
       </div>
     </nav>
   );
 }
+

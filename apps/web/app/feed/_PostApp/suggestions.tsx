@@ -2,9 +2,8 @@ import React from "react";
 import { UserPlus } from "lucide-react";
 import { Button } from "@ui/components/ui/button";
 import UserAvatar from "./avatar";
-import { User } from "gql/graphql";
 
-const Suggestions: React.FC = ({user}:{user:User}) => {
+const Suggestions = ({ user }) => {
   return (
     <div className="glass-card slide-in-animation">
       <div className="p-4 border-b border-border">

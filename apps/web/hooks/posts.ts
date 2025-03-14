@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { graphqlClient } from "./../providers/graphqlClient"
-import { createPostMutation } from "graphql/mutation/post";
 import { getAllPostsQuery, getPostByUsernameQuery } from "graphql/query/post";
 import { getPostCountQuery } from 'graphql/query/post';
-import { CreatePostMutation, CreatePostMutationVariables, GetAllPostsQuery, GetAllPostsQueryVariables, GetPostCountQuery, GetPostCountQueryVariables, GetPostsByUsernameQuery, GetPostsByUsernameQueryVariables } from "gql/graphql";
+import { GetAllPostsQuery, GetAllPostsQueryVariables, GetPostCountQuery, GetPostCountQueryVariables, GetPostsByUsernameQuery, GetPostsByUsernameQueryVariables } from "gql/graphql";
 
 
 export const useGetPosts=()=>{

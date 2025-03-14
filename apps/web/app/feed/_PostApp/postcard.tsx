@@ -6,7 +6,7 @@ import { followUserMutation, likePostMutation, unfollowUserMutation, unlikePostM
 import { graphqlClient } from '@providers/graphqlClient';
 import { useQueryClient } from '@tanstack/react-query';
 
-export function PostCard({ post,delay,user }: { post: Post; delay: number,user:User }) {
+export function PostCard({ post,delay,user }) {
   const amiLiked = useMemo(() => post.likes.some(liker => liker.userId === user.id), [user?.id, post]);
   const isFollowing = useMemo(() => user.following.some(f => f.id === post.author.id) ?? false, [user, post.author.id]);
   const [isLiked, setIsLiked] = useState(amiLiked);

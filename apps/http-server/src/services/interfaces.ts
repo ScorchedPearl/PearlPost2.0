@@ -48,3 +48,35 @@ export interface Like{
   user: User         
   post: Post         
 }
+export interface Room {
+  id: string
+  messages: Message[]
+  name?: string
+  avatar?: string
+  createdAt: Date
+  updatedAt: Date
+  users: [User]
+}
+export interface Reaction{
+  id: string
+  type: string
+  authorId: string
+  author: User
+  messageId?: string
+  message?: Message
+  postId?: String
+  post?: Post
+  createdAt: Date
+  updatedAt: Date
+}
+export interface Message {   
+  id: string
+  text: string
+  imageUrl: string
+  room: Room    
+  roomId: string
+  createdAt: Date    
+  authorId: string
+  author: User
+  reactions: [Reaction]            
+}

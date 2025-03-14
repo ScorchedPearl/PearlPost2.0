@@ -25,13 +25,16 @@ wss.on("connection", async(ws,request) => {
   ws.on("message", (message) => {
     const parsedData=JSON.parse(message.toString());
     if(parsedData.type==="join_room"){
-      RoomService.joinRoom(parsedData.room,parsedData.password,ws);
+      RoomService.joinRoom(parsedData.roomId,ws);
     }
     if(parsedData.type==="leave_room"){
-      RoomService.leaveRoom(parsedData.room,ws);
+      RoomService.leaveRoom(parsedData.roomId,ws);
     }
-    if(parsedData.type==="chat_in_room"||parsedData.type==="shape"){
-      RoomService.chatInRoom(parsedData.room,ws,parsedData.message);
+    if(parsedData.type==="message_in_room"){
+      RoomService.msgInRoom(parsedData.roomId,ws,parsedData.message,parsedData.imageURL);
+    }
+    if(parsedData.type==="reaction_in_room"){
+      RoomService.reactInRoom(parsedData.roomId,ws,parsedData.messageId,parsedData.reaction);
     }
   });
 }

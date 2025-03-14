@@ -3,16 +3,9 @@ import { Card, CardContent } from "@ui/components/ui/card";
 import { Button } from "@ui/components/ui/button";
 import { Badge } from "@ui/components/ui/badge";
 import { cn } from "@ui/lib/utils";
-import { User } from "gql/graphql";
-import { MessageCircle, UserPlus, Check } from "lucide-react";
 
-interface ProfileCardProps {
-  className?: string;
-  user: User;
-}
-
-export const ProfileCard = ({ className, user }: ProfileCardProps) => {
-
+export const ProfileCard = ({ className="", user }) => {
+console.log(user);
   return (
     <Card
       className={cn(
