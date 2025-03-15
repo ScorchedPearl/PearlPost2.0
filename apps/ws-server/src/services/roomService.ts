@@ -50,7 +50,7 @@ class RoomService {
             id:users.find((u) => u.ws === ws)?.userid
           }
         },
-        imageUrl:imageURL
+        imageURL:imageURL
       },
     });
     users.forEach((u) => { 

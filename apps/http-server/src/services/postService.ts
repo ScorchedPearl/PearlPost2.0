@@ -1,8 +1,8 @@
 import { prismaClient } from "@repo/db-config/client";
-import { GraphqlContext, ImageSignedURLPayload } from "./interfaces.js";
+import { GraphqlContext, ImageSignedURLPayload, VideoSignedURLPayload } from "./interfaces.js";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { CreatePostPayload } from "../app/post/types.js";
+import { CreateCommentData, CreatePostPayload } from "../app/post/types.js";
 import { redisClient } from "@repo/redis-config/client";
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -53,6 +53,18 @@ class PostService {
     const signedURL = await getSignedUrl(s3Client, putObjectCommand);
     return signedURL;
   }
+  public static async getSignedVideoURL(payload: VideoSignedURLPayload) {
+    const allowedVideoType = ["video/mp4", "video/webm", "video/ogg","video/mov"];
+    if (!allowedVideoType.includes(payload.videoType)) {
+      throw new Error("Invalid video type");
+    }
+    const putObjectCommand = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: `upload/${payload.ctx.user.id}/post/${payload.videoName}-${Date.now()}.${payload.videoType}}`,
+    });
+    const signedURL = await getSignedUrl(s3Client, putObjectCommand);
+    return signedURL;
+  }
   public static async createPost(
     payload: CreatePostPayload,
     ctx: GraphqlContext
@@ -64,7 +76,8 @@ class PostService {
     const post = await prismaClient.post.create({
       data: {
         content: payload.content,
-        imageURL: payload.imageUrl,
+        imageURL: payload.imageURL,
+        videoURL: payload.videoURL,
         author: {
           connect: {
             id: ctx.user.id,
@@ -86,6 +99,78 @@ class PostService {
     return await prismaClient.like.findMany({
       where:{
         postId:post.id
+      }
+    })
+  }
+  public static async createComment(payload: CreateCommentData, ctx: GraphqlContext) {
+    const comment = await prismaClient.comment.create({
+      data: {
+        content: payload.content,
+        imageURL: payload.imageURL,
+        author: {
+          connect: { id: ctx.user.id },
+        },
+        post:{
+          connect: { id: payload.postid }
+        },
+      },
+    });
+    return comment;
+  }
+  public static async getCommentAuthor(comment:any) {
+    return await prismaClient.user.findUnique({
+      where:{
+        id:comment.authorId
+      }
+    })
+  }
+  public static async getCommentReplies(comment:any) {
+    return await prismaClient.reply.findMany({
+      where:{
+        commentId:comment.id
+      }
+    })
+  }
+  public static async createReply(payload: any, ctx: GraphqlContext) {
+    const reply = await prismaClient.reply.create({
+      data: {
+        content: payload.content,
+        imageURL: payload.imageURL,
+        author: {
+          connect: { id: ctx.user.id },
+        },
+        comment:{
+          connect: { id: payload.commentId }
+        },
+      },
+    });
+    return reply; 
+  }
+  public static async getComments(post:any) {
+    return await prismaClient.comment.findMany({
+      where:{
+        postId:post.id
+      }
+    })
+  }
+  public static async getCommentLikes(comment:any) {
+    return await prismaClient.like.findMany({
+      where:{
+        commentId:comment.id
+      }
+    })
+  }
+  public static async getReplyAuthor(reply:any) {
+    return await prismaClient.user.findUnique({
+      where:{
+        id:reply.authorId
+      }
+    })
+  }
+  public static async getReplyLikes(reply:any) {
+    return await prismaClient.like.findMany({
+      where:{
+        replyId:reply.id
       }
     })
   }

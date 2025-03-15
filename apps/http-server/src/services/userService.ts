@@ -42,9 +42,7 @@ class UserService {
     const session = await JWTService.generateTokenForUser(userInDb);
     return session;
   }
-  public static async verifyCredentialsToken(
-    payload: VerifyCredentialsTokenType
-  ) {
+  public static async verifyCredentialsToken(payload: VerifyCredentialsTokenType) {
     const data = {
       email: payload.email as string,
       password: payload.password as string,
@@ -69,9 +67,7 @@ class UserService {
     const session = await JWTService.generateTokenForUser(user);
     return session;
   }
-  public static async createCredentialsToken(
-    payload: CreateCredentialsTokenType
-  ) {
+  public static async createCredentialsToken(payload: CreateCredentialsTokenType) {
     const email = payload.email as string;
     const password = payload.password as string;
     const name = payload.name as string;
@@ -185,23 +181,53 @@ class UserService {
     // await redisClient.del(`recommendedUsers:${ctx.user.id}`);
     return;
   }
-  public static async likePost(user: string, post: string) {
-    return await prismaClient.like.create({
+  public static async like(user: string, id:string,name:string) {
+    if(name==="post"){
+    await prismaClient.like.create({
       data: {
-        user: { connect: { id: user } },
-        post: { connect: { id: post } },
+        userId: user,
+        postId: id,
+      },
+    });
+  }else if(name=='comment'){
+    await prismaClient.like.create({
+      data: {
+        userId: user,
+        commentId: id,
+      },
+    });
+  }else if(name=='reply'){
+    await prismaClient.like.create({
+      data: {
+        userId: user,
+        replyId: id,
       },
     });
   }
-  public static async UnlikePost(user: string, post: string) {
-    return await prismaClient.like.delete({
+  }
+  public static async unlike(user: string, id:string,name:string) {
+    if(name==="post"){
+    await prismaClient.like.deleteMany({
       where: {
-        unique_user_post_like: {
-          userId: user,
-          postId: post,
-        },
+        userId: user,
+        postId: id,
       },
     });
+  }else if(name=='comment'){
+    await prismaClient.like.deleteMany({
+      where: {
+        userId: user,
+        commentId: id,
+      },
+    });
+  }else if(name=='reply'){
+    await prismaClient.like.deleteMany({
+      where: {
+        userId: user,
+        replyId: id,
+      },
+    });
+  }
   }
   public static async getFollowers(id: string) {
     const result = await prismaClient.follows.findMany({

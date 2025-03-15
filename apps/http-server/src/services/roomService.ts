@@ -1,15 +1,8 @@
 import { prismaClient } from "@repo/db-config/client";
-import { GraphqlContext, ImageSignedURLPayload, Room } from "./interfaces.js";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { CreatePostPayload } from "../app/post/types.js";
-import { redisClient } from "@repo/redis-config/client";
+import { GraphqlContext, Room } from "./interfaces.js";
 import * as dotenv from "dotenv";
 import { CreateRoomPayload } from "../app/room/types.js";
 dotenv.config();
-const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
-});
 class RoomService {
   public static async getAllRooms() {
     const rooms = await prismaClient.room.findMany({

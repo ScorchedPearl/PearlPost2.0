@@ -3,6 +3,7 @@ import { graphql } from "../../gql";
 export const getAllRoomsQuery = graphql(`#graphql
   query GetAllRooms {
     getAllRooms {
+      id
       users {
         name
         profileImageURL
@@ -16,7 +17,7 @@ export const getAllRoomsQuery = graphql(`#graphql
             profileImageURL
           }
         }
-        imageUrl
+        imageURL
         createdAt
         author {
           name

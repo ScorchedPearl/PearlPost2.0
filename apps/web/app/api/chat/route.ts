@@ -15,7 +15,7 @@ export async function POST(req:Request){
   }
   
    const response = await inference.chatCompletion({
-    model: 'microsoft/Phi-3-mini-4k-instruct', 
+    model: 'meta-llama/Meta-Llama-3-8B-Instruct', 
     messages: [template],
   });
 const message = response.choices[0].message;

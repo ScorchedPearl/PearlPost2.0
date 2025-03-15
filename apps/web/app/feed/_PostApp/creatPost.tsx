@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { graphqlClient } from "@providers/graphqlClient";
-import { getSignedUrlForPostImageQuery } from "graphql/query/post";
-import {  GetSignedUrlQuery, GetSignedUrlQueryVariables } from "gql/graphql";
+import { getSignedUrlForImageQuery, getSignedUrlForVideoQuery } from "graphql/query/post";
+import {  GetSignedUrlForImageQuery,GetSignedUrlForImageQueryVariables, GetSignedUrlForVideoQuery, GetSignedUrlForVideoQueryVariables} from "gql/graphql";
 import axios from "axios";
 import {  useQueryClient } from "@tanstack/react-query";
 import { createPostMutation } from "graphql/mutation/post";
@@ -11,6 +11,7 @@ import { Button } from "@ui/components/ui/button";
 const CreatePost = ({ user }) => {
   const [postText, setPostText] = useState("");
   const [imageurl, setImageurl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const fileInputRefs = useRef({
     photos: null,
@@ -23,27 +24,50 @@ const CreatePost = ({ user }) => {
     if(type==="photos"){
       const file:File = files[0];
       console.log(file);
-    const response = await graphqlClient.request<GetSignedUrlQuery,GetSignedUrlQueryVariables>(
-      getSignedUrlForPostImageQuery,
-      {
-        imageName: file.name,
-        imageType: file.type,
-      }
-    );
-    const { getSignedUrlForPostImage } = response;
+      const response = await graphqlClient.request<GetSignedUrlForImageQuery,GetSignedUrlForImageQueryVariables>(
+        getSignedUrlForImageQuery,
+        {
+          imageName: file.name,
+          imageType: file.type,
+        }
+      );
+      const { getSignedUrlForImage } = response;
 
-    if (getSignedUrlForPostImage) {
-      await axios.put(getSignedUrlForPostImage, file, {
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
-      const url = new URL(getSignedUrlForPostImage);
-      const filepath = `${url.origin}${url.pathname}`;
-      setImageurl(filepath);
-      console.log(filepath);
-    }   
-  }
+      if (getSignedUrlForImage) {
+        await axios.put(getSignedUrlForImage, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = new URL(getSignedUrlForImage);
+        const filepath = `${url.origin}${url.pathname}`;
+        setImageurl(filepath);
+        console.log(filepath);
+      }   
+    }
+    else if(type=="videos"){
+      const file:File = files[0];
+      console.log(file);
+      const response = await graphqlClient.request<GetSignedUrlForVideoQuery,GetSignedUrlForVideoQueryVariables>(
+        getSignedUrlForVideoQuery,
+        {
+          videoName: file.name,
+          videoType: file.type,
+        }
+      );
+      const { getSignedUrlForVideo } = response;
+      if(getSignedUrlForVideo){
+        await axios.put(getSignedUrlForVideo, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        const url = new URL(getSignedUrlForVideo);
+        const filepath = `${url.origin}${url.pathname}`;
+        setVideoUrl(filepath);
+        console.log(filepath);
+      }
+    }
   };
   const handleEnhanceMent = async() => {
     setIsTyping(true);
@@ -66,7 +90,8 @@ const CreatePost = ({ user }) => {
     console.log("Post text:", postText);
     const payload = {
       content: postText,
-      imageUrl: imageurl,
+      imageURL: imageurl,
+      videoURL: videoUrl,
     };
     await graphqlClient.request(createPostMutation as any, { payload });
     queryClient.invalidateQueries(["all-posts"] as any);
@@ -172,6 +197,11 @@ const CreatePost = ({ user }) => {
               alt={`Photo`}
               className="w-32 h-32 object-cover"
             />}  
+            {videoUrl&&<video
+              src={videoUrl}
+              controls
+              className="w-32 h-32 object-cover"
+            />}
       </div>
     </div>
   );

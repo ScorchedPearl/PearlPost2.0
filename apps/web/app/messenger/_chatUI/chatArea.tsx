@@ -49,9 +49,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   const quickEmojis = ['❤️', '👍', '😊', '😂', '🎉', '👏'];
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col ">
       {/* Chat Header */}
-      <div className="p-3 sm:p-4 glass-dark border-b border-white/10 flex items-center justify-between">
+      <div className=" p-3 sm:p-4 glass-dark border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center">
           <Avatar
             src={chat.avatar}
@@ -90,18 +90,18 @@ const ChatArea: React.FC<ChatAreaProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient">
         {messages.map(message => (
           <MessageBubble
-            user={user}
-            key={message.id}
-            id={message.id}
-            text={message.text}
-            sender={message.sender}
-            senderAvatar={message.senderAvatar}
-            timestamp={message.timestamp}
-            reactions={message.reactions}
-            showEmojiPicker={showEmojiPicker}
-            onEmojiPickerToggle={onEmojiPickerToggle}
-            onReaction={onReaction}
-            quickEmojis={quickEmojis}
+        user={user}
+        key={message.id}
+        id={message.id}
+        text={message.text}
+        sender={message.sender}
+        senderAvatar={message.senderAvatar}
+        timestamp={message.timestamp}
+        reactions={message.reactions}
+        showEmojiPicker={showEmojiPicker}
+        onEmojiPickerToggle={onEmojiPickerToggle}
+        onReaction={onReaction}
+        quickEmojis={quickEmojis}
           />
         ))}
       </div>

@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./_PostApp/navbar";
 import { ProfileCard } from "app/dashboard/_profile/profileCard";
 import CreatePost from "./_PostApp/creatPost";
@@ -18,7 +18,9 @@ const Index: React.FC = () => {
   const isMobile = useIsMobile();
   const {user,isLoading}=useCurrentUser();
   const {posts,isLoading2}=useGetPosts(); 
-
+  useEffect(() => {
+    setIsLoading(true);
+  }, [posts, user]);
   if(!isLoading2&&isLoad){
     setIsLoading(false);
     console.log(posts);

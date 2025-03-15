@@ -4,6 +4,6 @@ export const mutations=`#graphql
     changePassword(email:String!,newPassword:String!):Boolean
     followUser(to:ID!):Boolean
     unfollowUser(to:ID!):Boolean
-    likePost(id:ID!):Boolean
-    unlikePost(id:ID!):Boolean
+    like(id:ID!,name:String!):Boolean
+    unlike(id:ID!,name:String!):Boolean
 `

@@ -26,12 +26,12 @@ export const unfollowUserMutation= graphql(`#graphql
 }
 `);
 export const likePostMutation= graphql(`#graphql
-  mutation LikePost($likePostId: ID!) {
-    likePost(id: $likePostId)
-  }
+  mutation Like($likeId: ID!, $name: String!) {
+  like(id: $likeId, name: $name)
+}
 `);
 export const unlikePostMutation= graphql(`#graphql
-  mutation UnlikePost($unlikePostId: ID!) {
-    unlikePost(id: $unlikePostId)
-  }
+  mutation Unlike($unlikeId: ID!, $name: String!) {
+  unlike(id: $unlikeId, name: $name)
+}
 `);

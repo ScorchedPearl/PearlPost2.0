@@ -1,13 +1,12 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, Settings } from 'lucide-react';
-import ChatList from './_chatUi/chatList';
-import ChatArea from './_chatUi/chatArea';
+import ChatList from './_chatUI/chatList';
+import ChatArea from './_chatUI/chatArea';
 import { useIsMobile } from '@hooks/isMobile';
 import { useGetRooms } from '@hooks/room';
 import Loader from 'app/loading';
 import { useCurrentUser } from '@hooks/user';
-import { timeStamp } from 'console';
 import { User } from 'gql/graphql';
 
 interface Reaction {
@@ -73,7 +72,7 @@ const handleReaction = (messageId: number, emoji: string) => {
         const existingReaction = message.reactions.find(r => r.emoji === emoji);
         if (existingReaction) {
           // Remove reaction if user already reacted
-          if (existingReaction.reactedBy.includes('user')) {
+          if (existingReaction.reactedBy.includes(user.name)) {
             return {
               ...message,
               reactions: message.reactions.map(r => 
@@ -81,7 +80,7 @@ const handleReaction = (messageId: number, emoji: string) => {
                   ? { 
                       ...r, 
                       count: r.count - 1,
-                      reactedBy: r.reactedBy.filter(u => u !== 'user')
+                      reactedBy: r.reactedBy.filter(u => u !== user.name)
                     }
                   : r
               ).filter(r => r.count > 0)
@@ -95,7 +94,7 @@ const handleReaction = (messageId: number, emoji: string) => {
                 ? {
                     ...r,
                     count: r.count + 1,
-                    reactedBy: [...r.reactedBy, 'user']
+                    reactedBy: [...r.reactedBy, user.name]
                   }
                 : r
             )
@@ -103,7 +102,7 @@ const handleReaction = (messageId: number, emoji: string) => {
         }
         return {
           ...message,
-          reactions: [...message.reactions, { emoji, count: 1, reactedBy: ['user'] }]
+          reactions: [...message.reactions, { emoji, count: 1, reactedBy: [`${user.name}`] }]
         };
       }
       return message;
@@ -168,9 +167,10 @@ const updateMessageandReaction=(messages)=>{
 if(isLoading||isLoading3){
   return <Loader></Loader>
 }
-
+console.log(rooms);
   const chats: Chat[] = rooms.map((room,index)=>{
-    if (room.users.some((roomUser) => roomUser.name === user.name)) {
+    if (room.users.some((roomUser) => 
+      roomUser.name === user.name)) {
       return {
       id: index,
       name: handleRoomName(room),
@@ -185,7 +185,8 @@ if(isLoading||isLoading3){
     return null;
   }
   )
-const selectedChatData = chats.find(chat => chat?.id === selectedChat) || chats[0];
+  console.log(chats);
+const selectedChatData = chats.find(chat => chat.id === selectedChat) || chats[0];
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-gradient">
       {isMobile && (
@@ -208,7 +209,6 @@ const selectedChatData = chats.find(chat => chat?.id === selectedChat) || chats[
       )}
 
       <div className="flex flex-1 h-full overflow-hidden">
-        {/* Chat List (conditionally shown on mobile) */}
         {(showChatList || !isMobile) && (
           <div className={`${isMobile ? 'w-full' : 'w-80 md:w-96'} border-r border-white/10 h-full`}>
             <ChatList

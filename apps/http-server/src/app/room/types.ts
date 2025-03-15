@@ -2,7 +2,7 @@ export const types=`#graphql
   type Message {   
     id: ID!
     text: String
-    imageUrl: String
+    imageURL: String
     room: Room    
     roomId: String
     createdAt: DateTime     

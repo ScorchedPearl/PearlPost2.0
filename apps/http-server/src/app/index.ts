@@ -39,10 +39,14 @@ export async function initServer(){
         ...Room.resolvers.mutations
        },
        ...Post.resolvers.PostResolvers,
+       ...Post.resolvers.CommentResolvers,
+       ...Post.resolvers.ReplyResolvers,
        ...User.resolvers.UserResolvers,
+       ...User.resolvers.LikesResolvers,
        ...Room.resolvers.RoomResolvers,
        ...Room.resolvers.MessageResolvers,
        ...Room.resolvers.ReactionResolvers,
+
     },
   });
   await server.start();

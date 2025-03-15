@@ -25,6 +25,7 @@ model User {
   posts            Post[]
   comments         Comment[]
   replies          Reply[]
+  stories          Story[]
   recommendedUsers User[]    @relation("UserRecommendations")
   recommendedBy    User?     @relation("UserRecommendations", fields: [recommendedById], references: [id])
   recommendedById  String?
@@ -36,6 +37,7 @@ model Post {
   id        String    @id @default(cuid())
   content   String
   imageURL  String?
+  videoURL  String?
   published Boolean   @default(false)
   likes     Like[]
   comments  Comment[]
@@ -48,22 +50,45 @@ model Post {
   updatedAt DateTime @updatedAt
 }
 
+model Story {
+  id        String   @id @default(cuid())
+  content   String
+  imageURL  String?
+  videoURL  String?
+  published Boolean  @default(false)
+  likes     Like[]
+  reactions Reaction[]
+
+  author   User   @relation(fields: [authorId], references: [id] )
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Like {
+  id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  postId    String
-  post      Post     @relation(fields: [postId], references: [id])
-
-  @@id([userId, postId], name: "unique_user_post_like")
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id])
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  replyId   String?
+  reply     Reply?   @relation(fields: [replyId], references: [id])
+  storyId   String?
+  story     Story?   @relation(fields: [storyId], references: [id])
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+  @@unique([userId, replyId])
+  @@unique([userId, storyId])
 }
 
 model Comment {
   id        String   @id @default(cuid())
   content   String
-  imageUrl  String?
-  date      DateTime
-  public    Boolean  @default(false)
+  imageURL  String?
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
@@ -71,6 +96,8 @@ model Comment {
   post      Post     @relation(fields: [postId], references: [id])
   postId    String
   replies   Reply[]
+  likes     Like[]
+  reactions Reaction[]
 }
 
 
@@ -91,18 +118,18 @@ model Reply {
   comment   Comment  @relation(fields: [commentId], references: [id])
   commentId String
   content   String
-  imageUrl  String?
-  date      DateTime
-  public    Boolean  @default(false)
+  imageURL  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  likes     Like[]
+  reactions Reaction[]
 }
 
 
 model Message{
   id        String   @id @default(cuid())
   text      String?
-  imageUrl  String?
+  imageURL  String?
   roomId    String
   room      Room     @relation(fields: [roomId], references: [id])
   reactions  Reaction[]
@@ -118,10 +145,21 @@ model Reaction{
   message    Message?  @relation(fields: [messageId], references: [id])
   postId     String?
   post       Post?     @relation(fields: [postId], references: [id])
+  storyId    String?
+  story      Story?    @relation(fields: [storyId], references: [id])
+  commentId  String?
+  comment    Comment?  @relation(fields: [commentId], references: [id])
+  replyId    String?
+  reply      Reply?    @relation(fields: [replyId], references: [id])
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@unique([authorId, messageId])
+  @@unique([authorId, postId])
+  @@unique([authorId, storyId])
+  @@unique([authorId, commentId])
+  @@unique([authorId, replyId])
 }
 
 model Room{

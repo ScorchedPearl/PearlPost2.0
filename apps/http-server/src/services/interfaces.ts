@@ -14,6 +14,11 @@ export interface ImageSignedURLPayload{
  imageName:string;
  ctx:GraphqlContext;
 }
+export interface VideoSignedURLPayload{
+  videoType:string;
+  videoName:string;
+  ctx:GraphqlContext;
+}
 export type User = {
  id: string;
  email: string;

@@ -47,14 +47,14 @@ unfollowUser:async (parent:any,{to}:{to:string},ctx:GraphqlContext)=>{
   return true;
 
 },
-likePost:async (parent:any,{id}:{id:string},ctx:GraphqlContext)=>{
+like:async (parent:any,{id,name}:{id:string,name:string},ctx:GraphqlContext)=>{
   if(!ctx.user||!ctx.user.id) throw new Error("User not authenticated");
-  await UserService.likePost(ctx.user.id,id);
+  await UserService.like(ctx.user.id,id,name);
   return true;
 },
-unlikePost:async (parent:any,{id}:{id:string},ctx:GraphqlContext)=>{
+unlike:async (parent:any,{id,name}:{id:string,name:string},ctx:GraphqlContext)=>{
   if(!ctx.user||!ctx.user.id) throw new Error("User not authenticated");
-  await UserService.UnlikePost(ctx.user.id,id);
+  await UserService.unlike(ctx.user.id,id,name);
   return true;
 }
 }
@@ -78,4 +78,11 @@ const UserResolvers={
    }
  }
 }
-export const resolvers={queries,mutations,UserResolvers};
+const LikesResolvers={
+ Like:{
+    user:async (parent:any)=>{
+      return await prismaClient.user.findUnique({where:{id:parent.userId}})
+    },
+ }
+}
+export const resolvers={queries,mutations,UserResolvers,LikesResolvers};

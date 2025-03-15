@@ -1,25 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Share2, MoreVertical, Code2, Cpu, Globe2, Sparkles, UserCheck, UserPlus } from 'lucide-react';
-import { Post, User } from 'gql/graphql';
 import { followUserMutation, likePostMutation, unfollowUserMutation, unlikePostMutation } from 'graphql/mutation/user';
 import { graphqlClient } from '@providers/graphqlClient';
 import { useQueryClient } from '@tanstack/react-query';
-
+import PostWithComments from './comments';
+import { VideoPlayer } from './videoPlayer';
 export function PostCard({ post,delay,user }) {
-  const amiLiked = useMemo(() => post.likes.some(liker => liker.userId === user.id), [user?.id, post]);
-  const isFollowing = useMemo(() => user.following.some(f => f.id === post.author.id) ?? false, [user, post.author.id]);
+  const amiLiked = useMemo(() => post.likes.some((liker: { userId: string }) => liker.userId === user.id), [user?.id, post]);
+  const isFollowing = useMemo(() => user.following.some((f: { id: string }) => f.id === post.author.id) ?? false, [user, post.author.id]);
   const [isLiked, setIsLiked] = useState(amiLiked);
   const [following, setFollowing] = useState(isFollowing);
   const [likes, setLikes] = useState<number>(post.likes.length);
   const [isHovered, setIsHovered] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   useEffect(() => setIsLiked(amiLiked), [amiLiked,isLiked]);
   useEffect(() => setFollowing(isFollowing), [isFollowing,following]);
   const queryClient=useQueryClient();
   const handleLikePost=useCallback(async()=>{
     if(!post?.id) return;
     else{
-      await graphqlClient.request(likePostMutation as any,{likePostId:post.id})
+      await graphqlClient.request(likePostMutation as any,{likeId:post.id,name:"post"})
       await queryClient.invalidateQueries(["current-user",post?.id]as any)
       setIsLiked(!isLiked);
       setLikes((prev: number) => (prev + 1));
@@ -28,7 +29,7 @@ export function PostCard({ post,delay,user }) {
   const handleUnlikePost=useCallback(async()=>{
     if(!post?.id) return;
     else{
-      await graphqlClient.request(unlikePostMutation as any,{unlikePostId:post.id})
+      await graphqlClient.request(unlikePostMutation as any,{unlikeId:post.id,name:"post"})
       await queryClient.invalidateQueries(["current-user",post?.id]as any)
       setIsLiked(!isLiked);
       setLikes((prev: number) => ( prev - 1 ));
@@ -51,7 +52,10 @@ export function PostCard({ post,delay,user }) {
     }
   },[queryClient,user.id])
   return (
-    <motion.div
+    <>
+    {showComments ? (
+       <PostWithComments post={post} user={user} delay={0.25} setShowComments={setShowComments}/>
+    ) : (<motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
@@ -110,7 +114,14 @@ export function PostCard({ post,delay,user }) {
           className="w-full h-full object-cover transform transition-all duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      </div>}
+      </div>
+        }
+        {post.videoURL && (
+  <div className="w-full relative mt-2 overflow-hidden group rounded-2xl z-10">
+    <VideoPlayer videoURL={post.videoURL} />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+  </div>
+)}
       
 
       <div className="px-4 py-3 flex items-center justify-between border-t border-indigo-500/20 backdrop-blur-sm bg-black/10">
@@ -119,7 +130,7 @@ export function PostCard({ post,delay,user }) {
           <span>likes</span>
         </span>
         <div className="flex items-center space-x-4 text-sm text-indigo-200/60">
-          <span>{0} comments</span>
+          <span>{post.comments.length} comments</span>
           <span>{0} shares</span>
         </div>
       </div>
@@ -139,7 +150,9 @@ export function PostCard({ post,delay,user }) {
           <span>Like</span>
         </button>
         
-        <button className="flex items-center space-x-2 px-4 py-2 rounded-full text-indigo-200 hover:bg-indigo-500/10 transition-all duration-300 transform hover:scale-105">
+        <button 
+        onClick={()=>setShowComments(!showComments)}
+        className="flex items-center space-x-2 px-4 py-2 rounded-full text-indigo-200 hover:bg-indigo-500/10 transition-all duration-300 transform hover:scale-105">
           <MessageCircle className="w-5 h-5" />
           <span>Comment</span>
         </button>
@@ -148,7 +161,8 @@ export function PostCard({ post,delay,user }) {
           <Share2 className="w-5 h-5" />
           <span>Share</span>
         </button>
-      </div>
-    </motion.div>
+    </div>
+    </motion.div>)}
+    </>
   );
 }
