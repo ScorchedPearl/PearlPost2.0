@@ -23,7 +23,6 @@ console.log(user);
         <h3 className="mt-3 text-xl font-semibold text-white">{user.name}</h3>
         <p className="text-sm text-muted-foreground">{user.title}</p>
 
-        {/* Stats */}
         <div className="mt-4 flex items-center justify-around bg-white/10 rounded-lg p-2">
           <div className="text-center">
             <p className="text-lg font-semibold text-white">{user.posts.length}</p>
@@ -39,7 +38,6 @@ console.log(user);
           </div>
         </div>
         
-        {/* Profile Completion */}
         <div className="mt-4">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-muted-foreground">Profile Completion</span>
@@ -50,7 +48,6 @@ console.log(user);
           </div>
         </div>
         
-        {/* Interactive Buttons */}
         <div className="mt-5 flex flex-col sm:flex-row items-center gap-3 justify-center w-full max-w-xs mx-auto">
           <Button size="sm" className="w-full sm:w-auto sm:flex-1 bg-blue-500 hover:bg-blue-600 transition-all">
             Edit Profile
@@ -59,7 +56,6 @@ console.log(user);
 
         </div>
         
-        {/* Badges */}
         <div className="mt-5 flex flex-wrap justify-center gap-2">
           <Badge className="bg-blue-500/20 text-blue-400 border-transparent">{user.title}</Badge>
           <Badge className="bg-muted text-muted-foreground border-transparent">Content Creator</Badge>

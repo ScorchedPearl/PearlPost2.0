@@ -5,28 +5,23 @@ import {
   MessageCircleIcon, 
   ChevronDownIcon,
   MenuIcon,
-  HomeIcon,
-  UsersIcon,
-  SettingsIcon
+  Zap
 } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@ui/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@ui/components/ui/avatar';
 import { Button } from '@ui/components/ui/button';
 import { Input } from '@ui/components/ui/input';
 import { Badge } from '@ui/components/ui/badge';
+import { useRouter } from 'next/navigation';
 
-export const Header = () => {
+export const Header = ({user}) => {
   const [searchValue, setSearchValue] = useState('');
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Animation delay classes for nav items
-  const navItems = [
-    { icon: HomeIcon, label: "Home", delay: "delay-100" },
-    { icon: UsersIcon, label: "Team", delay: "delay-150" },
-    { icon: SettingsIcon, label: "Settings", delay: "delay-200" }
-  ];
+  const router = useRouter();
 
-  // Handle scroll events to change header style
+
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 20) {
@@ -59,29 +54,16 @@ export const Header = () => {
         </Button>
         
         <div className="flex items-center gap-2 translate-on-hover">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center animate-fade-in">
-            <span className="text-white font-bold text-lg">A</span>
-          </div>
-          <span className="font-medium text-lg text-gradient animate-fade-in delay-75">
-            Apollo
-          </span>
-        </div>
-        
-        <div className={`lg:flex hidden items-center gap-6 ml-10 ${menuOpen ? 'block absolute top-16 left-0 w-full bg-card shadow-lg p-4 rounded-lg animate-slide-in-bottom' : 'hidden'}`}>
-          {navItems.map((item, index) => (
-            <Button 
-              key={index} 
-              variant="ghost" 
-              className={`menu-item flex items-center gap-2 animate-fade-in ${item.delay}`}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Button>
-          ))}
+            <div className="h-10 w-10 rounded-full  flex items-center justify-center animate-fade-in">
+            <Zap className="relative h-8 w-8 text-cyan-400 transform group-hover:scale-110 transition-transform duration-200" />
+            </div>
+            <span className="font-medium text-lg bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400 animate-fade-in delay-75">
+            PearlPost
+            </span>
         </div>
       </div>
       
-      <div className="lg:flex hidden items-center border rounded-lg overflow-hidden bg-[#1a2935]/50 pl-3 w-1/3 transition-all duration-300 focus-within:border-primary focus-within:blue-glow">
+      <div className="lg:flex hidden items-center border rounded-lg overflow-hidden bg-[#1a2935]/50 pl-3 w-1/3 transition-all duration-300 focus-within:border-primary focus-within:blue-glow ml-52">
         <SearchIcon className="h-4 w-4 text-muted-foreground animate-fade-in" />
         <Input
           value={searchValue}
@@ -96,6 +78,7 @@ export const Header = () => {
           variant="ghost" 
           size="icon" 
           className="relative hover:bg-white/10 transition-all duration-300 group"
+          onClick={()=>router.push('/messenger')}
         >
           <MessageCircleIcon className="h-5 w-5 text-white/80 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
           <Badge 
@@ -110,6 +93,7 @@ export const Header = () => {
           variant="ghost" 
           size="icon" 
           className="relative hover:bg-white/10 transition-all duration-300 group"
+          onClick={()=>router.push('/feed')}
         >
           <BellIcon className="h-5 w-5 text-white/80 group-hover:text-white group-hover:scale-110 transition-all duration-300" />
           <Badge 
@@ -121,13 +105,13 @@ export const Header = () => {
         </Button>
         
         <div className="ml-2 pl-2 border-l border-white/10 flex items-center gap-2 hover:border-white/20 transition-all duration-300 group">
-          <Avatar className="h-9 w-9 border-2 border-blue-500/30 hover:border-blue-500/80 transition-all duration-300 overflow-hidden shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40">
-            <div className="bg-gradient-to-br from-blue-500 to-violet-600 h-full w-full" />
-            <AvatarFallback>AM</AvatarFallback>
-          </Avatar>
+            <Avatar className="h-9 w-9 border-2 border-blue-500/30 hover:border-blue-500/80 transition-all duration-300 overflow-hidden shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40">
+              <AvatarImage src={user.profileImageURL} alt="User Avatar" className="h-full w-full object-cover" />
+              <AvatarFallback>{user.name}</AvatarFallback>
+            </Avatar>
           <div className="hidden md:block transition-all duration-300 group-hover:translate-x-1">
-            <p className="text-sm font-medium leading-none text-white group-hover:text-blue-200 transition-all duration-300">Alex Morgan</p>
-            <p className="text-xs text-white/60 group-hover:text-white/80 transition-all duration-300">Premium</p>
+            <p className="text-sm font-medium leading-none text-white group-hover:text-blue-200 transition-all duration-300">{user.name}</p>
+            <p className="text-xs text-white/60 group-hover:text-white/80 transition-all duration-300">{user.title}</p>
           </div>
           <ChevronDownIcon className="h-4 w-4 text-white/60 hidden md:block group-hover:text-white/90 group-hover:rotate-180 transition-all duration-300" />
         </div>

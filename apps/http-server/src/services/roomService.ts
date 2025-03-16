@@ -57,7 +57,7 @@ class RoomService {
       },
     });
     return messages;
-   }
+  }
   public static async getReactions(parent: any) {
     const reactions = await prismaClient.reaction.findMany({
       where: {
@@ -65,8 +65,8 @@ class RoomService {
       },
     });
     return reactions;
-   }
-   public static async getUsers(room: Room) {
+  }
+  public static async getUsers(room: Room) {
     const users = await prismaClient.user.findMany({
       where: {
         rooms: {
@@ -77,14 +77,14 @@ class RoomService {
       },
     });
     return users;
-   }
-   public static async getAuthor(parent: any) {
+  }
+  public static async getAuthor(parent: any) {
     const author = await prismaClient.user.findFirst({
       where: {
         id: parent.authorId,
       },
     });
     return author;
-   }
+  }
 }
 export default RoomService;

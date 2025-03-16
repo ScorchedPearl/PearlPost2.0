@@ -13,11 +13,31 @@ import ChatBot from "app/_chatbot/page";
 import { useCurrentUser } from "@hooks/user";
 import Loader from "app/loading";
 import { useGetPosts } from "@hooks/posts";
+import StoryViewer from "./_PostApp/_Stories/storyViewer";
+import { useGetStories } from "@hooks/stories";
 const Index: React.FC = () => {
   const [isLoad, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const {user,isLoading}=useCurrentUser();
   const {posts,isLoading2}=useGetPosts(); 
+   const {stories,isLoading4}=useGetStories();
+  const [storyViewerOpen, setStoryViewerOpen] = useState(false);
+  const [selectedUserIndex, setSelectedUserIndex] = useState(0);
+  const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setForceUpdate(prev => prev + 1);
+    }, 30000); 
+    
+    return () => clearInterval(interval);
+  }, []);
+  const openStoryViewer = (userIndex: number, storyIndex: number = 0) => {
+      setSelectedUserIndex(userIndex);
+      setSelectedStoryIndex(storyIndex);
+      setStoryViewerOpen(true);
+  };
   useEffect(() => {
     setIsLoading(true);
   }, [posts, user]);
@@ -25,26 +45,32 @@ const Index: React.FC = () => {
     setIsLoading(false);
     console.log(posts);
   }
-  if(isLoading){
+  if(isLoading||isLoading4){
     return <Loader></Loader>
   }
   return (
     <div className="min-h-screen bg-background">
       <Header user={user}/>
-      
+      <StoryViewer 
+        isOpen={storyViewerOpen}
+        initialUserIndex={selectedUserIndex}
+        initialStoryIndex={selectedStoryIndex}
+        onClose={() => setStoryViewerOpen(false)}
+        stories={stories}
+      />
       <main className="pt-24 pb-16 px-4 md:px-6 max-w-7xl mx-auto ">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {!isMobile && (
             <div className="lg:col-span-3">
               <div className="sticky top-24 space-y-">
                 <ProfileCard user={user} />
-                <Stories />
+                <Stories openStoryViewer={openStoryViewer} stories={stories}/>
               </div>
             </div>
           )}
           <div className="lg:col-span-6">
             <CreatePost user={user}/>
-            {isMobile && <Stories />}
+            {isMobile && <Stories openStoryViewer={openStoryViewer} stories={stories}/>}
             
             {isLoad ? (
               <>

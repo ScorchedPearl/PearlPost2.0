@@ -3,6 +3,7 @@ import { GraphqlContext, User } from "../../services/interfaces";
 import UserService from "../../services/userService";
 import { CreateCredentialsTokenType, VerifyCredentialsTokenType } from "./types";
 import { prismaClient } from "@repo/db-config/client";
+import { get } from "axios";
 const queries={
  verifyCredentialsToken:async(parent:any,payload:VerifyCredentialsTokenType)=>{
   const session=UserService.verifyCredentialsToken(payload);
@@ -19,6 +20,18 @@ const queries={
  sendOtpEmail:async(parent:any,{email,otp}:{email:string,otp:string})=>{
   const sent= UserService.sendOtpEmail(email,otp);
   return sent;
+ },
+ getSignedUrlForImage:async (parent:any,{imageType,imageName}:{imageType:string,imageName:string},ctx:GraphqlContext)=>{
+  return await UserService.getSignedImageURL({imageType,imageName,ctx});
+ },
+ getSignedUrlForVideo:async (parent:any,{videoType,videoName}:{videoType:string,videoName:string},ctx:GraphqlContext)=>{
+  return await UserService.getSignedVideoURL({videoType,videoName,ctx});
+ },
+ getChartData:async(parent:any,{userId}:{userId:string})=>{
+  return await UserService.getChartData(userId);
+ },
+ getRecentActivity:async(parent:any,{userId}:{userId:string})=>{
+  return await UserService.getRecentActivity(userId);
  }
 }
 const mutations={

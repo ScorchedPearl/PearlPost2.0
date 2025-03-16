@@ -85,3 +85,30 @@ export interface Message {
   author: User
   reactions: [Reaction]            
 }
+
+export interface Story{
+  id: string
+  content: string
+  imageURL?: string
+  videoURL?: string
+  createdAt: Date
+  updatedAt: Date
+  likes: Like[]
+  reactions: Reaction[]
+  author: User
+  authorId: string
+}
+export interface ChartData{
+  weeklyData:{
+    name:string
+    likes:number
+    shares:number
+    comments:number
+  }
+  monthlyData:{
+    name:string
+    likes:number
+    shares:number
+    comments:number
+  }
+}

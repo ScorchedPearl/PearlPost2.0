@@ -1,13 +1,18 @@
 import axios from "axios";
 import { prismaClient } from "@repo/db-config/client";
-import { GoogleTokenResult, User } from "./interfaces.js";
+import { GoogleTokenResult, User, ImageSignedURLPayload, VideoSignedURLPayload } from "./interfaces.js";
 import JWTService from "./jwtService.js";
 import {
   CreateCredentialsTokenType,
   VerifyCredentialsTokenType,
 } from "../app/user/types.js";
 import { SignInSchema } from "@repo/common-config/types";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import nodemailer from "nodemailer";
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+});
 class UserService {
   public static async verifyGoogleAuthToken(token: string) {
     const googletoken = token;
@@ -287,5 +292,257 @@ class UserService {
     // await redisClient.set(`recommendedUsers:${id}`,JSON.stringify(uniqueArray));
     return uniqueArray;
   }
+  public static async getSignedImageURL(payload: ImageSignedURLPayload) {
+    if (!payload.ctx.user || !payload.ctx.user.id) {
+      throw new Error("You must be logged in to create a post");
+    }
+    const allowedImagetype = [
+      "image/jpg",
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+    if (!allowedImagetype.includes(payload.imageType)) {
+      throw new Error("Invalid image type");
+    }
+    const putObjectCommand = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: `upload/${payload.ctx.user.id}/post/${payload.imageName}-${Date.now()}.${payload.imageType}}`,
+    });
+    const signedURL = await getSignedUrl(s3Client, putObjectCommand);
+    return signedURL;
+  }
+  public static async getSignedVideoURL(payload: VideoSignedURLPayload) {
+    const allowedVideoType = ["video/mp4", "video/webm", "video/ogg","video/mov"];
+    if (!allowedVideoType.includes(payload.videoType)) {
+      throw new Error("Invalid video type");
+    }
+    const putObjectCommand = new PutObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: `upload/${payload.ctx.user.id}/post/${payload.videoName}-${Date.now()}.${payload.videoType}}`,
+    });
+    const signedURL = await getSignedUrl(s3Client, putObjectCommand);
+    return signedURL;
+  }
+  public static async getChartData(userId: string) {
+    const likes = await prismaClient.like.findMany({
+      where: {
+        OR: [
+          { post: { authorId: userId } },
+          { comment: { authorId: userId } },
+          { reply: { authorId: userId } },
+          { story: { authorId: userId } },
+        ],
+      },
+      include: {
+        post: true,
+        comment: true,
+        reply: true,
+        story: true,
+      },
+    });
+
+    const comments = await prismaClient.comment.findMany({
+      where: {
+        post: { authorId: userId },
+      },
+    });
+
+    const weeklyData = [
+      { name: 'Mon', likes: 0, shares: 0, comments: 0 },
+      { name: 'Tue', likes: 0, shares: 0, comments: 0 },
+      { name: 'Wed', likes: 0, shares: 0, comments: 0 },
+      { name: 'Thu', likes: 0, shares: 0, comments: 0 },
+      { name: 'Fri', likes: 0, shares: 0, comments: 0 },
+      { name: 'Sat', likes: 0, shares: 0, comments: 0 },
+      { name: 'Sun', likes: 0, shares: 0, comments: 0 },
+    ];
+
+    const monthlyData = [
+      { name: 'Week 1', likes: 0, shares: 0, comments: 0 },
+      { name: 'Week 2', likes: 0, shares: 0, comments: 0 },
+      { name: 'Week 3', likes: 0, shares: 0, comments: 0 },
+      { name: 'Week 4', likes: 0, shares: 0, comments: 0 },
+    ];
+
+    const startOfWeek = new Date();
+    const day = startOfWeek.getDay();
+    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); 
+    startOfWeek.setDate(diff);
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const startOfMonth = new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), 1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    
+
+    likes.forEach((like) => {
+          const likeDate = new Date(like.createdAt);
+          if (likeDate >= startOfWeek) {
+            const day = (likeDate.getDay() + 6) % 7; 
+            weeklyData[day].likes += 1;
+          }
+          if (likeDate >= startOfMonth) {
+            const week = Math.ceil((likeDate.getDate() + startOfMonth.getDay()-1) / 7);
+            monthlyData[week - 1].likes += 1;
+          }
+        });
+
+    comments.forEach((comment) => {
+          const commentDate = new Date(comment.createdAt);
+          if (commentDate >= startOfWeek) {
+            const day = (commentDate.getDay() + 6) % 7; 
+            weeklyData[day].comments += 1;
+          }
+          if (commentDate >= startOfMonth) {
+            const week = Math.ceil(commentDate.getDate() / 7);
+            monthlyData[week - 1].comments += 1;
+          }
+        });
+
+    return { weeklyData, monthlyData };
+  }
+  public static async getRecentActivity(userId: string) {
+    const userPosts = await prismaClient.post.findMany({
+      where: { authorId: userId },
+      include: {
+      comments: {
+        include:{
+          author:true
+        }
+      },
+      likes: {
+        include: {
+          user: true,
+        },
+      },
+      },
+    });
+
+    const userComments = await prismaClient.comment.findMany({
+      where: { authorId: userId },
+      include: {
+      replies: {
+        include:{
+          author:true
+        }
+      },
+      likes: {
+        include: {
+          user: true,
+        },
+      }
+  },});
+
+    const userReplies = await prismaClient.reply.findMany({
+      where: { authorId: userId },
+      include: {
+      likes: {
+        include:{
+          user:true
+        }
+      }
+      },
+    });
+
+    const userStories = await prismaClient.story.findMany({
+      where: { authorId: userId },
+      include: {
+      likes: {
+        include: {
+          user: true,
+        },
+      }
+      },
+    });
+
+    const followers = await prismaClient.follows.findMany({
+      where: { followingid: userId },
+      include: {
+      follower: true,
+      },
+    });
+    const activities = [];
+
+    userPosts.forEach(post => {
+      post.comments.forEach(comment => {
+      activities.push({
+        id: comment.id,
+        user: { name: comment.author.name, avatar: comment.author.profileImageURL, username: comment.author.name },
+        action: 'comment',
+        content: `commented on your post`,
+        time: comment.createdAt,
+      });
+      });
+      post.likes.forEach(like => {
+      activities.push({
+        id: like.id,
+        user: { name: like.user.name, avatar: like.user.profileImageURL, username: like.user.name },
+        action: 'like',
+        content: `liked your post`,
+        time: like.createdAt,
+      });
+      });
+    });
+
+    userComments.forEach(comment => {
+      comment.replies.forEach(reply => {
+      activities.push({
+        id: reply.id,
+        user: { name: reply.author.name, avatar: reply.author.profileImageURL, username: reply.author.name },
+        action: 'reply',
+        content: `replied to your comment`,
+        time: reply.createdAt,
+      });
+      });
+      comment.likes.forEach(like => {
+      activities.push({
+        id: like.id,
+        user: { name: like.user.name, avatar: like.user.profileImageURL, username: like.user.name },
+        action: 'like',
+        content: `liked your comment`,
+        time: like.createdAt,
+      });
+      });
+    });
+
+    userReplies.forEach(reply => {
+      reply.likes.forEach(like => {
+      activities.push({
+        id: like.id,
+        user: { name: like.user.name, avatar: like.user.profileImageURL, username: like.user.name },
+        action: 'like',
+        content: `liked your reply`,
+        time: like.createdAt,
+      });
+      });
+    });
+
+    userStories.forEach(story => {
+      story.likes.forEach(like => {
+      activities.push({
+        id: like.id,
+        user: { name: like.user.name, avatar: like.user.profileImageURL, username: like.user.name },
+        action: 'like',
+        content: `liked your story`,
+        time: like.createdAt,
+      });
+      });
+    });
+
+    followers.forEach(follow => {
+      activities.push({
+      id: follow.followerid,
+      user: { name: follow.follower.name, avatar: follow.follower.profileImageURL, username: follow.follower.name },
+      action: 'follow',
+      content: 'started following you',
+      time: follow.createdAt,
+      });
+    });
+
+    activities.sort((a, b) => b.time - a.time);
+
+    return activities.slice(0, 5);
+  }
 }
 export default UserService;
+

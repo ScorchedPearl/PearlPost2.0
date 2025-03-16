@@ -1,3 +1,3 @@
 export const query =`#graphql
-  getAllPosts:[Post]
+  getAllStories:[Story]
 `

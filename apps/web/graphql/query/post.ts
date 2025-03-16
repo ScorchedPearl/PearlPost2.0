@@ -63,36 +63,6 @@ export const getAllPostsQuery = graphql(`#graphql
   }
 `);
 
-export const getPostCountQuery = graphql(`#graphql
-  query GetPostCount($username: String!) {
-    getPostCount(username: $username)
-  }
-`);
-
-export const getPostByUsernameQuery = graphql(`#graphql
-  query GetPostsByUsername($username: String!) {
-    getPostByUsername(username: $username) {
-      id
-      content
-      imageURL
-      createdAt
-      updatedAt
-      likes {
-        postId
-        userId
-        createdAt
-      }
-      author {
-        name
-        profileImageURL
-        name
-        id
-        title
-      }
-    }
-  }
-`);
-
 export const getSignedUrlForImageQuery = graphql(`#graphql
   query GetSignedURLForImage($imageName: String!, $imageType: String!) {
   getSignedUrlForImage(imageName: $imageName, imageType: $imageType)

@@ -8,7 +8,6 @@ const RightSidebar: React.FC = () => {
   return (
     <div className="space-y-4">
       
-      {/* Trending topics */}
       <div className="glass-card slide-in-animation" style={{ animationDelay: '0.3s' }}>
         <div className="px-4 py-3 border-b border-gray-200/60">
           <h3 className="font-semibold text-sm">Trending topics</h3>
@@ -31,7 +30,6 @@ const RightSidebar: React.FC = () => {
         </div>
       </div>
       
-      {/* Footer */}
       <div className="px-4 py-3 slide-in-animation" style={{ animationDelay: '0.4s' }}>
         <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground mb-2">
           <a href="#" className="hover:text-primary hover:underline">About</a>

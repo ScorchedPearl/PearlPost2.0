@@ -1,8 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { graphqlClient } from "./../providers/graphqlClient"
-import { getAllPostsQuery, getPostByUsernameQuery } from "graphql/query/post";
-import { getPostCountQuery } from 'graphql/query/post';
-import { GetAllPostsQuery, GetAllPostsQueryVariables, GetPostCountQuery, GetPostCountQueryVariables, GetPostsByUsernameQuery, GetPostsByUsernameQueryVariables } from "gql/graphql";
+import { getAllPostsQuery } from "graphql/query/post";
+import { GetAllPostsQuery, GetAllPostsQueryVariables} from "gql/graphql";
 
 
 export const useGetPosts=()=>{
@@ -14,30 +13,4 @@ export const useGetPosts=()=>{
     isLoading2: query.isLoading,
   };
 }
-export const useGetPostsByUsername = (username: string) => {
-  const query = useQuery<GetPostsByUsernameQuery, GetPostsByUsernameQueryVariables>({
-    queryKey: ["post-username", username],
-    queryFn: () =>
-      graphqlClient.request(
-        getPostByUsernameQuery as any,
-        { username }
-      ),
-  });
-  return{...query,posts:query.data?.getPostByUsername,
-    isLoading4:query.isLoading,
-  };
-}
 
-export const usePostCount = (username: string) => {
-  const query = useQuery<GetPostCountQuery,GetPostCountQueryVariables>({
-    queryKey: ["post-count", username],
-    queryFn: () =>
-      graphqlClient.request(
-        getPostCountQuery,
-        { username }
-      ),
-  });
-  return { ...query, postCount:query.data?.getPostCount,
-    isLoading3: query.isLoading,
-   };
-};

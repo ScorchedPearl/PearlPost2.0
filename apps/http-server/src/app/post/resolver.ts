@@ -1,4 +1,3 @@
-import { prismaClient } from "@repo/db-config/client";
 import { GraphqlContext, Post } from "../../services/interfaces";
 import PostService from "../../services/postService";
 import { CreateCommentData, CreatePostPayload } from "./types";
@@ -6,18 +5,6 @@ import { CreateCommentData, CreatePostPayload } from "./types";
 const queries={
   getAllPosts:async()=>{ 
     return await PostService.getAllPost();
-  },
-  getPostCount: async (parent:any,{name}:{name:string},context:any,info:any) => {
-    return await prismaClient.post.count({ where:{author:{name}} });
-  },
-  getPostByUsername:async (parent:any,{name}:{name:string})=>{
-    return await PostService.getPostByUsername(name);
-  },
-  getSignedUrlForImage:async (parent:any,{imageType,imageName}:{imageType:string,imageName:string},ctx:GraphqlContext)=>{
-    return await PostService.getSignedImageURL({imageType,imageName,ctx});
-  },
-  getSignedUrlForVideo:async (parent:any,{videoType,videoName}:{videoType:string,videoName:string},ctx:GraphqlContext)=>{
-    return await PostService.getSignedVideoURL({videoType,videoName,ctx});
   }
 }
 const mutations={

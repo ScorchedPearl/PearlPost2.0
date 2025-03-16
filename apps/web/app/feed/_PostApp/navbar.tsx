@@ -4,14 +4,12 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Home, 
-  Users, 
   Briefcase, 
   MessageSquare, 
-  Bell, 
   Search, 
   Menu, 
-  X, 
-  Sparkles 
+  X,  
+  Zap
 } from "lucide-react";
 import { Button } from "@ui/components/ui/button";
 import { Input } from "@ui/components/ui/input";
@@ -46,17 +44,15 @@ export default function Header({user}) {
         <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
           
           <Link href="/" className="flex items-center space-x-2">
-            <Sparkles className="h-6 w-6 text-blue-400" />
-            <span className="text-white text-lg font-semibold tracking-wide">PostPearl</span>
+            <Zap className="relative h-8 w-8 text-cyan-400 transform group-hover:scale-110 transition-transform duration-200" />
+            <span className="text-white text-lg font-semibold tracking-wide">PearlPost</span>
           </Link>
 
           {!isMobile && (
             <nav className="flex items-center space-x-6">
-              <NavItem icon={<Home className="h-5 w-5" />} label="Home" path="/" active={pathname === "/"} />
-              <NavItem icon={<Users className="h-5 w-5" />} label="Network" path="/network" active={pathname === "/network"} />
-              <NavItem icon={<Briefcase className="h-5 w-5" />} label="Jobs" path="/jobs" active={pathname === "/jobs"} />
-              <NavItem icon={<MessageSquare className="h-5 w-5" />} label="Messages" path="/messages" active={pathname === "/messages"} />
-              <NavItem icon={<Bell className="h-5 w-5" />} label="Notifications" path="/notifications" active={pathname === "/notifications"} />
+              <NavItem icon={<Home className="h-6 w-6" />} label="Home" path="/" active={pathname === "/"} />
+            <NavItem icon={<Briefcase className="h-6 w-6" />} label="Dashboard" path="/dashboard" active={pathname === "/dashboard"} />
+            <NavItem icon={<MessageSquare className="h-6 w-6" />} label="Messenger" path="/messenger" active={pathname === "/messenger"} />
             </nav>
           )}
 
@@ -95,10 +91,8 @@ export default function Header({user}) {
         <nav className="fixed bottom-0 left-0 right-0 bg-[#0a0f1c]/95 backdrop-blur-lg shadow-lg border-t border-blue-500/30">
           <div className="flex justify-around py-3">
             <NavItem icon={<Home className="h-6 w-6" />} label="Home" path="/" active={pathname === "/"} />
-            <NavItem icon={<Users className="h-6 w-6" />} label="Network" path="/network" active={pathname === "/network"} />
-            <NavItem icon={<Briefcase className="h-6 w-6" />} label="Jobs" path="/jobs" active={pathname === "/jobs"} />
-            <NavItem icon={<MessageSquare className="h-6 w-6" />} label="Messages" path="/messages" active={pathname === "/messages"} />
-            <NavItem icon={<Bell className="h-6 w-6" />} label="Notifications" path="/notifications" active={pathname === "/notifications"} />
+            <NavItem icon={<Briefcase className="h-6 w-6" />} label="Dashboard" path="/dashboard" active={pathname === "/dashboard"} />
+            <NavItem icon={<MessageSquare className="h-6 w-6" />} label="Messanger" path="/messanger" active={pathname === "/messanger"} />
           </div>
         </nav>
       )}

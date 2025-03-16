@@ -76,10 +76,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoURL }) => {
 />
 
       
-      {/* Overlay Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-      {/* Center Play/Pause Button */}
       <motion.button
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm p-4 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         whileHover={{ scale: 1.1 }}

@@ -6,6 +6,7 @@ import { graphqlClient } from '@providers/graphqlClient';
 import { useQueryClient } from '@tanstack/react-query';
 import PostWithComments from './comments';
 import { VideoPlayer } from './videoPlayer';
+import { convertIsoToHuman } from '@ui/lib/utils';
 export function PostCard({ post,delay,user }) {
   const amiLiked = useMemo(() => post.likes.some((liker: { userId: string }) => liker.userId === user.id), [user?.id, post]);
   const isFollowing = useMemo(() => user.following.some((f: { id: string }) => f.id === post.author.id) ?? false, [user, post.author.id]);
@@ -14,6 +15,7 @@ export function PostCard({ post,delay,user }) {
   const [likes, setLikes] = useState<number>(post.likes.length);
   const [isHovered, setIsHovered] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const {date,time}=convertIsoToHuman(post.createdAt);
   useEffect(() => setIsLiked(amiLiked), [amiLiked,isLiked]);
   useEffect(() => setFollowing(isFollowing), [isFollowing,following]);
   const queryClient=useQueryClient();
@@ -89,7 +91,7 @@ export function PostCard({ post,delay,user }) {
             </div>
             <p className="text-sm text-indigo-200/60 flex items-center space-x-1">
               <Sparkles className="w-3 h-3 animate-pulse" />
-              <span>{post.createdAt}</span>
+              <span>{`${date} At:${time}`}</span>
             </p>
           </div>
         </div>

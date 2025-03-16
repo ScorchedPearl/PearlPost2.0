@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/components/ui/card';
-import { Avatar } from '@ui/components/ui/avatar';
+import { Avatar, AvatarImage } from '@ui/components/ui/avatar';
 import { 
   HeartIcon, 
   MessageCircleIcon, 
@@ -8,54 +8,12 @@ import {
   ShareIcon,
   StarIcon
 } from 'lucide-react';
-import { cn } from '@ui/lib/utils';
+import { cn, convertIsoToHuman } from '@ui/lib/utils';
 import { Badge } from '@ui/components/ui/badge';
 
-const activities = [
-  {
-    id: 1,
-    user: { name: 'Sarah Johnson', avatar: null, username: '@sarahj' },
-    action: 'like',
-    content: 'liked your post "The Future of Design Systems"',
-    time: '2 minutes ago',
-    icon: HeartIcon
-  },
-  {
-    id: 2,
-    user: { name: 'Michael Chen', avatar: null, username: '@mchen' },
-    action: 'comment',
-    content: 'commented on your photo: "This is incredible work!"',
-    time: '15 minutes ago',
-    icon: MessageCircleIcon
-  },
-  {
-    id: 3,
-    user: { name: 'Emma Williams', avatar: null, username: '@emma' },
-    action: 'follow',
-    content: 'started following you',
-    time: '1 hour ago',
-    icon: UserPlusIcon
-  },
-  {
-    id: 4,
-    user: { name: 'Kevin Patel', avatar: null, username: '@kevinp' },
-    action: 'share',
-    content: 'shared your post "Minimalism in UI Design"',
-    time: '3 hours ago',
-    icon: ShareIcon
-  },
-  {
-    id: 5,
-    user: { name: 'Social Media Today', avatar: null, username: '@smtoday' },
-    action: 'mention',
-    content: 'mentioned you in a post about "Top Designers to Follow"',
-    time: '5 hours ago',
-    icon: StarIcon
-  }
-];
 
 interface ActivityItemProps {
-  activity: typeof activities[0];
+  activity: any;
   index: number;
 }
 
@@ -67,7 +25,7 @@ const ActivityItem = ({ activity, index }: ActivityItemProps) => {
     return () => clearTimeout(timer);
   }, [index]);
 
-  const Icon = activity.icon;
+  
   
   const getActionColor = (action: string) => {
     switch(action) {
@@ -75,11 +33,22 @@ const ActivityItem = ({ activity, index }: ActivityItemProps) => {
       case 'comment': return 'text-blue-500 bg-blue-500/10';
       case 'follow': return 'text-emerald-500 bg-emerald-500/10';
       case 'share': return 'text-purple-500 bg-purple-500/10';
-      case 'mention': return 'text-amber-500 bg-amber-500/10';
+      case 'reply': return 'text-amber-500 bg-amber-500/10';
       default: return 'text-primary bg-primary/10';
     }
   };
-
+  const getActionIcon = (action: string) => {
+    switch(action) {
+      case 'like': return HeartIcon;
+      case 'comment': return MessageCircleIcon;
+      case 'follow': return UserPlusIcon;
+      case 'share': return ShareIcon;
+      case 'reply': return StarIcon;
+      default: return HeartIcon;
+    }
+  };
+  const Icon = getActionIcon(activity.action);
+  const {time}= convertIsoToHuman(activity.time);
   return (
     <div 
       className={cn(
@@ -88,7 +57,7 @@ const ActivityItem = ({ activity, index }: ActivityItemProps) => {
       )}
     >
       <Avatar className="h-9 w-9 border border-border/50">
-        <div className="bg-gradient-to-br from-primary/70 to-accent/70 h-full w-full" />
+        <AvatarImage src={activity.user.avatar} />
       </Avatar>
       
       <div className="flex-1 min-w-0">
@@ -100,7 +69,7 @@ const ActivityItem = ({ activity, index }: ActivityItemProps) => {
           {activity.content}
         </p>
         <div className="flex items-center gap-2 mt-1">
-          <p className="text-xs text-muted-foreground">{activity.time}</p>
+          <p className="text-xs text-muted-foreground">{time}</p>
           <div className={cn(
             "flex items-center px-1.5 py-0.5 rounded text-xs",
             getActionColor(activity.action)
@@ -114,7 +83,8 @@ const ActivityItem = ({ activity, index }: ActivityItemProps) => {
   );
 };
 
-export const ActivityFeed = () => {
+export const ActivityFeed = ({activityData}) => {
+  const activities = activityData;
   return (
     <Card className="glass-card border-border/50 animate-fade-in delay-200 mb-20">
       <CardHeader className="pb-2">

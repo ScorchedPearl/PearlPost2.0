@@ -4,7 +4,13 @@ export const types=`#graphql
     userId: String     
     postId: String      
     user: User         
-    post: Post         
+    post: Post  
+    commentId: String
+    comment: Comment
+    replyId: String
+    reply: Reply
+    storyId: String
+    story: Story       
   }
   input CreatePostData {
     content: String!

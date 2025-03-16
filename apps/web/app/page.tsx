@@ -79,7 +79,7 @@ function App() {
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-blue-200">
+            <h2 className="text-4xl font-bold text-white mb-4 bg-clip-text bg-gradient-to-r from-blue-400 via-blue-300 to-blue-200">
               Experience the Future of Connection
             </h2>
             <p className="text-lg text-blue-300/80 max-w-2xl mx-auto">
@@ -142,7 +142,7 @@ function App() {
         />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-300 to-blue-200">
+            <h2 className="text-4xl font-bold text-white mb-4 bg-clip-text bg-gradient-to-r from-blue-400 via-blue-300 to-blue-200">
               Global Impact
             </h2>
             <p className="text-lg text-blue-300/80 max-w-2xl mx-auto">

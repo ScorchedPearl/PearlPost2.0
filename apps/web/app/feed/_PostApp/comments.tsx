@@ -2,28 +2,20 @@
 
 import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@ui/components/ui/avatar"
-import { Button } from "@ui/components/ui/button"
-import { Card } from "@ui/components/ui/card"
 import { Textarea } from "@ui/components/ui/textarea"
 import {
-  Heart,
   MessageCircle,
   Share2,
   Send,
   Reply,
   X,
   ThumbsUp,
-  MoreHorizontal,
-  Bookmark,
   AlertTriangle,
   ImageIcon,
   Smile,
   AtSign,
   Calendar,
   Clock,
-  Award,
-  TrendingUp,
-  Sparkles,
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { PostCard } from "./postcard"
@@ -32,6 +24,8 @@ import { graphqlClient } from "@providers/graphqlClient"
 import { createCommentMutation, createReplyMutation } from "graphql/mutation/post"
 import { useQueryClient } from "@tanstack/react-query"
 import { likePostMutation, unlikePostMutation } from "graphql/mutation/user"
+import { useIsMobile } from "@hooks/isMobile"
+import { convertIsoToHuman } from "@ui/lib/utils"
 
 export default function PostWithComments({ post,delay,user,setShowComments }:{post:Post,delay:number,user:any,setShowComments:any}) {
   const [commentText, setCommentText] = useState("")
@@ -41,9 +35,13 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
   const [likedComments, setLikedComments] = useState<string[]>([])
   const [likedReplies, setLikedReplies] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const isMobile = useIsMobile()
   const queryClient = useQueryClient()
   
-  const [comments, setComments] = useState(post.comments.map((comment) => ({
+  const [comments, setComments] = useState(post.comments.map((comment) => {
+    const {date,time}=convertIsoToHuman(comment.createdAt);
+    
+    return ({
     id: comment.id,
     user: {
       name: comment.author.name,
@@ -51,9 +49,10 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
       avatar: comment.author.profileImageURL,
     },
     content: comment.content,
-    timestamp: comment.createdAt,
+    timestamp: `${date} At:${time}`,
     likes: comment.likes.length,
-    replies: comment.replies.map((reply) => ({
+    replies: comment.replies.map((reply) => {
+      return ({
       id:reply.id,
       user: {
         name: reply.author.name,
@@ -63,8 +62,9 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
       content: reply.content,
       timestamp: reply.createdAt,
       likes: reply.likes.length,
-    })),
-  }))
+    
+    })}),
+  })})
   )
   useEffect(() => {
     setLikedComments(post.comments.filter((comment) => comment.likes.some((like) => like.userId === user.id)).map((comment) => comment.id))
@@ -91,7 +91,7 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
               avatar: user.profileImageURL,
             },
             content: commentText,
-            timestamp: new Date().toISOString(),
+            timestamp: `${convertIsoToHuman(new Date().toISOString()).date} At:${convertIsoToHuman(new Date().toISOString()).time}`,
             likes: 0,
             replies: [],
           },
@@ -128,7 +128,7 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
               avatar: user.profileImageURL,
             },
             content: replyText,
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toString(),
             likes: 0,
           },
             ],
@@ -221,7 +221,6 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-transparent overflow-hidden fixed z-50 inset-0">
-      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl animate-pulse"></div>
         <div
@@ -234,20 +233,17 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
         ></div>
       </div>
 
-      {/* Blurred background */}
       <div className="absolute inset-0 backdrop-blur-md bg-blue-950/30"></div>
 
-      {/* Main container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="relative w-full max-w-6xl flex flex-col md:flex-row gap-4 z-10"
       >
-        {/* Post */}
+        {!isMobile&&
         <PostCard post={post} delay={delay} user={user}></PostCard>
-
-        {/* Comments Section - Popup style */}
+        }
         <AnimatePresence>
           {showComments && (
             <motion.div
@@ -273,7 +269,6 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
               </div>
 
               <div className="max-h-[70vh] overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-indigo-700 scrollbar-track-black/30">
-          {/* Add Comment */}
           <div className="flex gap-3">
             <Avatar className="h-8 w-8 ring-2 ring-indigo-400/30 ring-offset-1 ring-offset-black/60">
               <AvatarImage src={user.profileImageURL} alt="Current User" />
@@ -315,7 +310,6 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
             </div>
           </div>
 
-          {/* Comments List */}
           {comments.map((comment, index) => (
             <motion.div
               key={index}
@@ -386,7 +380,6 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
               </motion.button>
             </div>
 
-            {/* Reply Form */}
             <AnimatePresence>
               {replyingTo === comment.id && (
                 <motion.div
@@ -449,7 +442,6 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
               )}
             </AnimatePresence>
 
-            {/* Replies */}
             {comment.replies.length > 0 && (
               <div className="ml-6 mt-3 space-y-3 border-l-2 border-gradient-to-b from-indigo-500/50 via-purple-500/30 to-indigo-800/20 pl-3">
                 {comment.replies.map((reply, replyIndex) => (

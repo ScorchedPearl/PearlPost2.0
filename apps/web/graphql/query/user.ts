@@ -51,3 +51,38 @@ export const sendOtpEmailQuery=graphql(`#graphql
   sendOtpEmail(email: $email, otp: $otp)
   }
 `)
+
+export const getChartDataQuery=graphql(`#graphql
+  query GetChartData($userId: String!) {
+  getChartData(userId: $userId) {
+    monthlyData {
+      shares
+      name
+      likes
+      comments
+    }
+    weeklyData {
+      shares
+      name
+      likes
+      comments
+    }
+  }
+}
+`)
+
+export const getRecentActivityQuery=graphql(`#graphql
+  query GetRecentActivity($userId: String!) {
+  getRecentActivity(userId: $userId) {
+    action
+    content
+    id
+    time
+    user {
+      username
+      name
+      avatar
+    }
+  }
+}
+`)

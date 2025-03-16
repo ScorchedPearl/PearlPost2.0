@@ -7,6 +7,7 @@ import JWTService from "../services/jwtService";
 import { User } from "./user";
 import { Post } from "./post";
 import { Room } from "./room";
+import { Story } from "./story";
 export async function initServer(){
   const app=express();
   app.use(cors());
@@ -16,27 +17,32 @@ export async function initServer(){
    ${User.Types}
    ${Post.types}
    ${Room.types}
+   ${Story.types}
    type Query{
      ${User.queries}
      ${Post.query}
      ${Room.query}
+     ${Story.query}
    }
    type Mutation{
      ${User.mutations}
      ${Post.mutations}
      ${Room.mutations}
+     ${Story.mutations}
    }
     `,
     resolvers:{
       Query:{
         ...User.resolvers.queries,
         ...Post.resolvers.queries,
-        ...Room.resolvers.queries
+        ...Room.resolvers.queries,
+        ...Story.resolvers.queries
        },
        Mutation:{
         ...User.resolvers.mutations,
         ...Post.resolvers.mutations,
-        ...Room.resolvers.mutations
+        ...Room.resolvers.mutations,
+        ...Story.resolvers.mutations
        },
        ...Post.resolvers.PostResolvers,
        ...Post.resolvers.CommentResolvers,
@@ -46,7 +52,7 @@ export async function initServer(){
        ...Room.resolvers.RoomResolvers,
        ...Room.resolvers.MessageResolvers,
        ...Room.resolvers.ReactionResolvers,
-
+       ...Story.resolvers.StoryResolver
     },
   });
   await server.start();

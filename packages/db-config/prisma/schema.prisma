@@ -38,7 +38,6 @@ model Post {
   content   String
   imageURL  String?
   videoURL  String?
-  published Boolean   @default(false)
   likes     Like[]
   comments  Comment[]
   reactions Reaction[]
@@ -52,10 +51,8 @@ model Post {
 
 model Story {
   id        String   @id @default(cuid())
-  content   String
   imageURL  String?
   videoURL  String?
-  published Boolean  @default(false)
   likes     Like[]
   reactions Reaction[]
 
@@ -107,7 +104,7 @@ model Follows {
 
   following   User   @relation("following", fields: [followingid], references: [id])
   followingid String
-
+  createdAt   DateTime @default(now())
   @@id([followerid, followingid])
 }
 

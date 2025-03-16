@@ -3,13 +3,22 @@
 import React, { useState } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import UserAvatar from "./avatar";
-import { suggestedUsers } from "@ui/lib/mockdata";
 import { Button } from "@ui/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@ui/components/ui/dialog";
+import CreateStoryForm from "./_Stories/createStory";
+import { convertIsoToHuman } from "@ui/lib/utils";
 
-const Stories: React.FC = () => {
+interface StoriesProps {
+  openStoryViewer: (index: number) => void;
+  stories: any;
+}
+
+const Stories: React.FC<StoriesProps> = ({ openStoryViewer,stories }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
   const [showLeftScroll, setShowLeftScroll] = useState(false);
   const [showRightScroll, setShowRightScroll] = useState(true);
+ 
+  console.log(stories);
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
@@ -27,7 +36,6 @@ const Stories: React.FC = () => {
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
-
   return (
     <div className="relative bg-[#0a0f1c]/40 backdrop-blur-xl rounded-xl p-4 mb-6
                     shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-blue-500/20
@@ -59,15 +67,14 @@ const Stories: React.FC = () => {
           <ChevronRight className="h-5 w-5 text-blue-400" />
         </Button>
       )}
-
-      {/* Stories Container */}
       <div
         id="stories-container"
         className="flex items-center space-x-4 overflow-x-auto scrollbar-hide pb-2"
         onScroll={handleScroll}
       >
-        {/* Create Story Card */}
-        <div className="flex-shrink-0 group">
+        <Dialog>
+          <DialogTrigger asChild>
+          <div className="flex-shrink-0 group">
           <div className="relative cursor-pointer">
             <div className="w-28 h-40 rounded-xl bg-gradient-to-b from-blue-500/10 to-blue-500/5
                           border border-blue-500/30 hover:border-blue-500/50
@@ -86,50 +93,61 @@ const Stories: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* User Stories */}
-        {suggestedUsers.map((user) => (
-          <div key={user.id} className="flex-shrink-0 group">
+          </DialogTrigger>
+          <DialogContent className="bg-gradient-to-b from-black via-gray-900 to-black border-white/10 text-white rounded-2xl shadow-xl transition-all duration-500 animate-fadeIn">
+      <DialogHeader>
+        <DialogTitle className="text-white text-lg font-semibold">Create a new story</DialogTitle>
+            </DialogHeader>
+            <CreateStoryForm />
+          </DialogContent>
+        </Dialog>
+        {stories.map((story,index) => {
+          const {date,time}=convertIsoToHuman(story.createdAt);
+          return (
+          <div key={index} className="flex-shrink-0 group" onClick={() => openStoryViewer(index)}>
             <div className="relative cursor-pointer">
               <div className="w-28 h-40 rounded-xl overflow-hidden
                             shadow-[0_4px_20px_rgba(0,0,0,0.2)]
                             transition-transform duration-300
                             group-hover:transform group-hover:scale-[1.02]">
-                {/* Story Image */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60" />
-                <img
-                  src={user.profileImageURL}
-                  alt={user.name}
+                {story.imageURL && (
+                  <img
+                  src={story.imageURL}
+                  alt={story.author.name}
                   className="w-full h-full object-cover transition-transform duration-700
                            group-hover:scale-110"
-                />
-                
-                {/* User Avatar */}
+                />)}
+                {story.videoURL && (
+                  <video
+                  src={story.videoURL}
+                  className="w-full h-full object-cover transition-transform duration-700
+                           group-hover:scale-110"
+                />)}
                 <div className="absolute top-3 left-3 ring-[3px] ring-blue-500 rounded-full
                               shadow-[0_2px_8px_rgba(0,0,0,0.3)]
                               transform transition-transform duration-300
                               group-hover:scale-110">
-                  <UserAvatar src={user.profileImageURL} name={user.name} size="sm" />
+                  <UserAvatar src={story.author.profileImageURL} name={story.author.name} size="sm" />
                 </div>
-
-                {/* User Name */}
                 <div className="absolute bottom-3 left-3 right-3">
                   <p className="text-sm font-medium text-white truncate
                               transform transition-all duration-300
                               group-hover:translate-y-[-2px]">
-                    {user.name}
+                    {story.author.name}
                   </p>
                   <p className="text-xs text-blue-200/80 truncate mt-0.5
                               transform transition-all duration-300
                               group-hover:translate-y-[-2px]">
-                    2h ago
+                    {`${date} At:${time}`}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
+      
     </div>
   );
 };

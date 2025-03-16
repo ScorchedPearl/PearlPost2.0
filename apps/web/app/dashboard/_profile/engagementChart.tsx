@@ -1,25 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@ui/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ui/components/ui/tabs';
-
-const data = [
-  { name: 'Mon', likes: 4000, shares: 2400, comments: 2400 },
-  { name: 'Tue', likes: 3000, shares: 1398, comments: 2210 },
-  { name: 'Wed', likes: 2000, shares: 9800, comments: 2290 },
-  { name: 'Thu', likes: 2780, shares: 3908, comments: 2000 },
-  { name: 'Fri', likes: 1890, shares: 4800, comments: 2181 },
-  { name: 'Sat', likes: 2390, shares: 3800, comments: 2500 },
-  { name: 'Sun', likes: 3490, shares: 4300, comments: 2100 },
-];
-
-const weeklyData = data;
-const monthlyData = [
-  { name: 'Week 1', likes: 15000, shares: 9800, comments: 8400 },
-  { name: 'Week 2', likes: 18000, shares: 11000, comments: 9200 },
-  { name: 'Week 3', likes: 13000, shares: 8700, comments: 7500 },
-  { name: 'Week 4', likes: 19000, shares: 12500, comments: 10300 },
-];
+import { Tabs, TabsList, TabsTrigger } from '@ui/components/ui/tabs';
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -42,7 +24,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export const EngagementChart = () => {
+export const EngagementChart = ({chartData}) => {
+  const {monthlyData,weeklyData}=chartData;
   const [mounted, setMounted] = useState(false);
   const [activeData, setActiveData] = useState(weeklyData);
   

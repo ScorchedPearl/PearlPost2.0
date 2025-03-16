@@ -5,10 +5,8 @@ import {
  ShareIcon, 
 } from 'lucide-react';
 import { AnalyticsCard } from './anaylyticsCard';
-import { User } from 'gql/graphql';
-import { get } from 'http';
 
-export const StatsGrid = ({user}:{user:User}) => {
+export const StatsGrid = ({user}) => {
  const getTotalLikes = (posts: any) => {
     console.log(posts);
    return posts.reduce((acc: any, post: any) => {
