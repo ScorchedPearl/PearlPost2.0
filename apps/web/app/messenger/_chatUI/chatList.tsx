@@ -23,7 +23,7 @@ const ChatList: React.FC<ChatListProps> = ({ chats, selectedChat, onSelectChat }
     <div className="h-full flex flex-col glass-dark">
       <div className="p-4 sm:p-6 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl sm:text-2xl font-medium text-gradient">Messages</h1>
+          <h1 className="text-xl text-white sm:text-2xl font-medium">PearlPost</h1>
         </div>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />

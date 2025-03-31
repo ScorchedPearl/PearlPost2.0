@@ -50,7 +50,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 
   return (
     <div className="h-full flex flex-col ">
-      {/* Chat Header */}
+
       <div className=" p-3 sm:p-4 glass-dark border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center">
           <Avatar

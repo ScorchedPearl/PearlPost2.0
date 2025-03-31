@@ -65,33 +65,50 @@ class RoomService {
      });
     }
   public static async reactInRoom(roomId: string, ws: WebSocket, messageId: string,reaction:string){
-    console.log("reactInRoom", roomId, ws, messageId,reaction);
-    await prismaClient.reaction.create({
-      data: {
-        message:{
-          connect:{
-            id:messageId
+    const userid= users.find((u) => u.ws === ws)?.userid;
+    try {
+      await prismaClient.$transaction(async (prisma) => {
+        const reactionInDb = await prisma.reaction.findUnique({
+          where: { authorId_messageId: { messageId, authorId: userid } },
+        });
+    
+        let updatedReaction = reaction;
+    
+        if (reactionInDb) {
+          if (reactionInDb.type === reaction) {
+            await prisma.reaction.delete({ where: { id: reactionInDb.id } });
+          } else {
+            await prisma.reaction.update({
+              where: { id: reactionInDb.id },
+              data: { type: reaction },
+            });
           }
-        },
-        type: reaction,
-        author:{
-          connect:{
-            id:users.find((u) => u.ws === ws)?.userid
-          }
+        } else {
+          await prisma.reaction.create({
+            data: {
+              message: { connect: { id: messageId } },
+              type: reaction,
+              author: { connect: { id: userid } },
+            },
+          });
         }
-      },
-    });
-    users.forEach((u) => {
-      if (u.rooms.includes(roomId)&&u.ws!==ws) {
-        u.ws.send(JSON.stringify({
-         type:"reaction_in_room",
-         messageId:messageId,
-         roomId:roomId,
-         reaction:reaction,
-        })); 
-       }
-     }
-    );  
+    
+        users.forEach((u) => {
+          if (u.rooms.includes(roomId) && u.ws !== ws) {
+            u.ws.send(
+              JSON.stringify({
+                type: "reaction_in_room",
+                messageId,
+                roomId,
+                reaction: updatedReaction,
+              })
+            );
+          }
+        });
+      });
+    } catch (error) {
+      console.error("Error handling reaction:", error);
+    }
   }
 }
 export default RoomService;

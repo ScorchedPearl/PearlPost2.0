@@ -10,6 +10,7 @@ export const getAllRoomsQuery = graphql(`#graphql
       }
       messages {
         text
+        id
         reactions {
           type
           author {

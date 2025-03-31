@@ -10,8 +10,8 @@
   "devDependencies": {
     "@repo/common-config": "workspace:*",
     "@repo/db-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@repo/redis-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@types/nodemailer": "^6.4.17"
   },
   "keywords": [],
@@ -23,6 +23,7 @@
     "@aws-sdk/client-s3": "^3.758.0",
     "@aws-sdk/s3-request-presigner": "^3.758.0",
     "@types/cors": "^2.8.17",
+    "axios": "^1.8.4",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

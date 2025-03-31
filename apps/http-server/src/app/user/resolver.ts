@@ -32,6 +32,10 @@ const queries={
  },
  getRecentActivity:async(parent:any,{userId}:{userId:string})=>{
   return await UserService.getRecentActivity(userId);
+ },
+ getAllUser:async(parent:any,args:any,ctx:GraphqlContext)=>{
+  const users=await UserService.getAllUser(ctx.user.id);
+  return users;
  }
 }
 const mutations={

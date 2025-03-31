@@ -8,6 +8,7 @@ import { useGetRooms } from '@hooks/room';
 import Loader from 'app/loading';
 import { useCurrentUser } from '@hooks/user';
 import { User } from 'gql/graphql';
+import { useSocket } from '@hooks/useSockets';
 
 interface Reaction {
   emoji: string;
@@ -43,6 +44,57 @@ const Index = () => {
   const [showEmojiPicker, setShowEmojiPicker] = useState<number | null>(null);
   const {rooms,isLoading3}=useGetRooms();
   const {user,isLoading}=useCurrentUser();
+  const [index,setIndex]=useState(0);
+  const [socket,setSocket]=useState<WebSocket>();
+  const { websocket } = useSocket(rooms?.[index]?.id);
+
+  useEffect(() => {
+    if (websocket) {
+      setSocket(websocket);
+      console.log(websocket);
+    }
+  }, [websocket]);
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'message_in_room' && data.roomId === rooms[index].id) {
+            const otherPerson = rooms[index].users.find(
+            (roomUser) => roomUser.name !== user.name
+            );
+            const newMessage: Message = {
+            id: messages.length + 1,
+            text: data.message,
+            sender: otherPerson?.name || "Unknown",
+            senderAvatar: otherPerson?.profileImageURL || "",
+            timestamp: new Date().toISOString(),
+            reactions: []
+            };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+        if(data.type==='reaction_in_room' && data.roomId===rooms[index].id){
+          const messageIndex = messages.findIndex(message => message.id === data.messageId);
+          if (messageIndex !== -1) {
+            const updatedMessages = [...messages];
+            const reactionIndex = updatedMessages[messageIndex].reactions.findIndex(reaction => reaction.emoji === data.reaction);
+            if (reactionIndex !== -1) {
+              updatedMessages[messageIndex].reactions[reactionIndex].count += 1;
+              updatedMessages[messageIndex].reactions[reactionIndex].reactedBy.push(user.name);
+            } else {
+              updatedMessages[messageIndex].reactions.push({ emoji: data.reaction, count: 1, reactedBy: [user.name] });
+            }
+            setMessages(updatedMessages);
+          }
+        }
+      };
+    }
+
+    return () => {
+      if (socket) {
+        socket.onmessage = null;
+      }
+    };
+  }, [socket, rooms, index, messages]);
   useEffect(() => {
     if (!isMobile) {
       setShowChatList(true);
@@ -70,9 +122,15 @@ const handleReaction = (messageId: number, emoji: string) => {
     prevMessages.map(message => {
       if (message.id === messageId) {
         const existingReaction = message.reactions.find(r => r.emoji === emoji);
+        socket.send(JSON.stringify({  
+          type: 'reaction_in_room',
+          roomId: rooms[index].id,
+          messageId: rooms[index].messages[messageId].id,
+          reaction: emoji
+        }));
         if (existingReaction) {
-          // Remove reaction if user already reacted
           if (existingReaction.reactedBy.includes(user.name)) {
+        
             return {
               ...message,
               reactions: message.reactions.map(r => 
@@ -86,7 +144,7 @@ const handleReaction = (messageId: number, emoji: string) => {
               ).filter(r => r.count > 0)
             };
           }
-          // Add user to existing reaction
+         
           return {
             ...message,
             reactions: message.reactions.map(r =>
@@ -100,6 +158,7 @@ const handleReaction = (messageId: number, emoji: string) => {
             )
           };
         }
+   
         return {
           ...message,
           reactions: [...message.reactions, { emoji, count: 1, reactedBy: [`${user.name}`] }]
@@ -119,6 +178,11 @@ const handleSendMessage = (text: string) => {
     timestamp: new Date().toISOString(),
     reactions: []
   };
+  socket.send(JSON.stringify({  
+    type: 'message_in_room',
+    roomId: rooms[index].id,
+    message: text
+  }));
 
   setMessages([...messages, newMessage]);
 };
@@ -133,6 +197,7 @@ const handleSendMessage = (text: string) => {
 }
 useEffect(() => {
   if (!isLoading||!isLoading3) {
+    setIndex(0);
     setSelectedChat(0);
     updateMessageandReaction(rooms[0].messages);
   }

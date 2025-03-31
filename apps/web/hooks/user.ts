@@ -1,6 +1,6 @@
 import {  useQuery } from "@tanstack/react-query"
-import { GetChartDataQuery, GetChartDataQueryVariables, GetCurrentUserQuery, GetCurrentUserQueryVariables, GetRecentActivityQuery, GetRecentActivityQueryVariables } from "gql/graphql";
-import {   getChartDataQuery, getCurrentUserQuery, getRecentActivityQuery } from "graphql/query/user";
+import { GetAllUserQuery, GetAllUserQueryVariables, GetChartDataQuery, GetChartDataQueryVariables, GetCurrentUserQuery, GetCurrentUserQueryVariables, GetRecentActivityQuery, GetRecentActivityQueryVariables } from "gql/graphql";
+import {   getAllUserQuery, getChartDataQuery, getCurrentUserQuery, getRecentActivityQuery } from "graphql/query/user";
 import { graphqlClient } from "@providers/graphqlClient/index";
 
 export const useCurrentUser = () => {
@@ -33,4 +33,15 @@ export const useActivityData=(userId:string)=>{
     }
   })
   return {...query,activityData:query.data?.getRecentActivity,isLoading:query.isLoading}
+}
+
+export const useGetAllUser=()=>{
+  const query=useQuery({
+    queryKey:["getAllUser"],
+    queryFn:async()=>{
+      const data=await graphqlClient.request<GetAllUserQuery,GetAllUserQueryVariables>(getAllUserQuery);
+      return data;
+    }
+  })
+  return {...query,allUser:query.data?.getAllUser,isLoading:query.isLoading}
 }

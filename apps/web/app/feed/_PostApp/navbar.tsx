@@ -16,12 +16,15 @@ import { Input } from "@ui/components/ui/input";
 import UserAvatar from "./avatar";
 import { useIsMobile } from "@hooks/isMobile";
 import { usePathname } from "next/navigation"; 
+import { useGetAllUser } from "@hooks/user";
 
 export default function Header({user}) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [filteredUsers,setFilteredUsers]=useState([]);
   const isMobile = useIsMobile();
   const pathname = usePathname(); 
+  const users=useGetAllUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,16 +61,41 @@ export default function Header({user}) {
 
           <div className="flex items-center space-x-4">
             {!isMobile && (
-              <div className="relative group">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-blue-400 transition-all group-hover:text-blue-300" />
-                <Input
-                  placeholder="Search..."
+                <div className="relative group">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-blue-400 transition-all group-hover:text-blue-300" />
+                  <Input
+                  placeholder="Search users..."
                   className="w-40 bg-[#131b2e]/50 border border-blue-500/30 
-                             focus:w-64 transition-all duration-300 pl-9 
-                             text-white placeholder-blue-200/50 focus-visible:ring-2 
-                             focus-visible:ring-blue-500/50 rounded-full shadow-md"
-                />
-              </div>
+                     focus:w-64 transition-all duration-300 pl-9 
+                     text-white placeholder-blue-200/50 focus-visible:ring-2 
+                     focus-visible:ring-blue-500/50 rounded-full shadow-md"
+                  onChange={(e) => {
+                    const query = e.target.value.toLowerCase();
+                    const filteredUsers = users.allUser.filter((u) =>
+                    u.name.toLowerCase().includes(query)
+                    );
+                    setFilteredUsers(filteredUsers); 
+                  }}
+                  />
+                  {filteredUsers.length > 0 && (
+                  <div className="absolute top-12 left-0 w-full bg-[#0a0f1c] border border-blue-500/30 rounded-lg shadow-lg z-10">
+                    {filteredUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="px-4 py-2 hover:bg-blue-500/10 cursor-pointer text-white"
+                      onClick={() => {
+                      console.log(`Selected user: ${user.name}`);
+                      }}
+                    >
+                      <div className="flex items-center space-x-2">
+                      <UserAvatar src={user.profileImageURL} name={user.name}></UserAvatar>
+                      {user.name}
+                      </div>
+                    </div>
+                    ))}
+                  </div>
+                  )}
+                </div>
             )}
 
 

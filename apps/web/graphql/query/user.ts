@@ -86,3 +86,13 @@ export const getRecentActivityQuery=graphql(`#graphql
   }
 }
 `)
+
+export const getAllUserQuery=graphql(`#graphql
+  query GetAllUser {
+  getAllUser {
+    name
+    profileImageURL
+    title
+  }
+}
+`)

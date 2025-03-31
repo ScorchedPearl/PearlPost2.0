@@ -47,6 +47,21 @@ class UserService {
     const session = await JWTService.generateTokenForUser(userInDb);
     return session;
   }
+  public static async getAllUser(id: string) {
+    const users = await prismaClient.user.findMany({
+      where: {
+        NOT: {
+          id: id,
+        },
+      },
+      include: {
+        followers: true,
+        following: true,
+        posts: true,
+      },
+    });
+    return users;
+  }
   public static async verifyCredentialsToken(payload: VerifyCredentialsTokenType) {
     const data = {
       email: payload.email as string,
