@@ -1,5 +1,4 @@
 import JWTService from "./jwtService";
-import { users } from "..";
 class UserService{
  public static async verifyUser(token:string){
   const user= await JWTService.decodeToken(token||"");

@@ -242,7 +242,7 @@ export default function PostWithComments({ post,delay,user,setShowComments }:{po
         className="relative w-full max-w-6xl flex flex-col md:flex-row gap-4 z-10"
       >
         {!isMobile&&
-        <PostCard post={post} delay={delay} user={user}></PostCard>
+        <PostCard post={post} delay={delay} ></PostCard>
         }
         <AnimatePresence>
           {showComments && (

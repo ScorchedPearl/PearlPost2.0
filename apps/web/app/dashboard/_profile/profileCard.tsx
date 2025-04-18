@@ -3,9 +3,10 @@ import { Card, CardContent } from "@ui/components/ui/card";
 import { Button } from "@ui/components/ui/button";
 import { Badge } from "@ui/components/ui/badge";
 import { cn } from "@ui/lib/utils";
+import { useUser } from "@providers/stateClient/userClient";
 
-export const ProfileCard = ({ className="", user }) => {
-console.log(user);
+export const ProfileCard = ({ className="" }) => {
+  const {currentUser:user}=useUser();
   return (
     <Card
       className={cn(

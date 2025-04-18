@@ -7,7 +7,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import PostWithComments from './comments';
 import { VideoPlayer } from './videoPlayer';
 import { convertIsoToHuman } from '@ui/lib/utils';
-export function PostCard({ post,delay,user }) {
+import { useUser } from '@providers/stateClient/userClient';
+export function PostCard({ post,delay }) {
+  const {currentUser:user}=useUser();
   const amiLiked = useMemo(() => post.likes.some((liker: { userId: string }) => liker.userId === user.id), [user?.id, post]);
   const isFollowing = useMemo(() => user.following.some((f: { id: string }) => f.id === post.author.id) ?? false, [user, post.author.id]);
   const [isLiked, setIsLiked] = useState(amiLiked);

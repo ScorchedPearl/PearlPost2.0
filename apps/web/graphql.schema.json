@@ -1707,6 +1707,22 @@
             "deprecationReason": null
           },
           {
+            "name": "getRoomsById",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Room",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "getSignedUrlForImage",
             "description": null,
             "args": [

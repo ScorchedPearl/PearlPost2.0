@@ -8,11 +8,13 @@ import { createPostMutation } from "graphql/mutation/post";
 import UserAvatar from "./avatar";
 import { Calendar, FileText, Video, Image ,Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@ui/components/ui/button";
-const CreatePost = ({ user }) => {
+import { useUser } from "@providers/stateClient/userClient";
+const CreatePost = () => {
   const [postText, setPostText] = useState("");
   const [imageurl, setImageurl] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const {currentUser:user}=useUser();
   const fileInputRefs = useRef({
     photos: null,
     videos: null,

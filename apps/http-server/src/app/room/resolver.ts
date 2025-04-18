@@ -6,6 +6,9 @@ const queries={
   getAllRooms:async()=>{ 
     return await RoomService.getAllRooms();
   },
+  getRoomsById:async(parent:any,args:any,ctx:GraphqlContext)=>{
+    return await RoomService.getRoomsById(ctx.user.id);
+  }
 }
 const mutations={
   createRoom:async (parent:any,{payload}:{payload:CreateRoomPayload},ctx:GraphqlContext)=>{

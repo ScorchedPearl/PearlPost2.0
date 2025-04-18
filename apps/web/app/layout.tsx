@@ -5,6 +5,8 @@ import ThemeProvider from "providers/themeProvider/themes";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import QueryProvider from "providers/queryClient";
+import { UserProvider } from "@providers/stateClient/userClient";
+import { Toaster } from "@ui/components/ui/sonner";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,8 +42,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            
+        <UserProvider>
         {children}
+        <Toaster position="bottom-right" />
+        </UserProvider>
         <ReactQueryDevtools></ReactQueryDevtools>
         </ThemeProvider>
         </GoogleOAuthProvider>

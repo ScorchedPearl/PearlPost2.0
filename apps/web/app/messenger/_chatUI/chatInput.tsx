@@ -1,77 +1,123 @@
-import React, { useState } from 'react';
-import { Image, Camera, Mic, Link2, Smile, Send } from 'lucide-react';
+import { useState } from "react";
+import { Button } from "@ui/components/ui/button";
+import { Textarea } from "@ui/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip";
+import { Smile, Paperclip, Image, Send } from "lucide-react";
+import { cn } from "@ui/lib/utils";
+import { useChats } from "@providers/stateClient/chatClient";
 
-interface ChatInputProps {
-  onSendMessage: (message: string) => void;
+interface MessageInputProps {
+  disabled?: boolean;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
-  const [messageInput, setMessageInput] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (messageInput.trim()) {
-      onSendMessage(messageInput);
-      setMessageInput('');
+export const MessageInput = ({ disabled = false }: MessageInputProps) => {
+  const {onSendMessage}=useChats();
+  const [message, setMessage] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
+  const handleSend = () => {
+    if (message.trim() && !disabled) {
+      onSendMessage(message);
+      setMessage("");
     }
   };
-
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+  
+  const emojis = ["😊", "👍", "❤️", "🎉", "🔥", "😂", "😎", "🙌"];
+  
   return (
-    <form 
-      onSubmit={handleSubmit}
-      className="p-3 sm:p-4 glass-dark border-t border-white/10"
-    >
-      <div className="flex items-center space-x-2 sm:space-x-4">
-        <div className="hidden sm:flex space-x-2">
-          <button type="button" className="text-chat-primary hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
-            <Image className="w-5 h-5" />
-          </button>
-          <button type="button" className="text-chat-primary hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
-            <Camera className="w-5 h-5" />
-          </button>
-          <button type="button" className="text-chat-primary hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
-            <Mic className="w-5 h-5" />
-          </button>
-        </div>
+    <div className={cn("border-t bg-black p-4", disabled && "opacity-75")}>
+      <div className="relative">
+        <Textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={disabled ? "Select a chat to start messaging" : "Type a message..."}
+          className="min-h-[80px] resize-none pr-12 bg-secondary/20"
+          disabled={disabled}
+        />
         
-        <div className="flex sm:hidden">
-          <button type="button" className="text-chat-primary hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
-            <Image className="w-5 h-5" />
-          </button>
+        <div className="absolute bottom-3 right-3 flex gap-1">
+          <div className="relative">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="h-8 w-8 rounded-full"
+                  onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                  disabled={disabled}
+                >
+                  <Smile size={18} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">Add emoji</TooltipContent>
+            </Tooltip>
+            
+            {showEmojiPicker && !disabled && (
+              <div className="absolute bottom-full right-0 mb-2 p-2 bg-blue-700 border rounded-lg shadow-lg flex flex-wrap gap-2 scale-in z-10">
+                {emojis.map(emoji => (
+                  <button
+                    key={emoji}
+                    className="text-xl hover:bg-gray-400/20 p-1 rounded"
+                    onClick={() => {
+                      setMessage(prev => prev + emoji);
+                      setShowEmojiPicker(false);
+                    }}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-8 w-8 rounded-full"
+                disabled={disabled}
+              >
+                <Paperclip size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Attach file</TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-8 w-8 rounded-full"
+                disabled={disabled}
+              >
+                <Image size={18} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Attach image</TooltipContent>
+          </Tooltip>
         </div>
-        
-        <div className="relative flex-1">
-          <input
-            type="text"
-            value={messageInput}
-            onChange={(e) => setMessageInput(e.target.value)}
-            placeholder="Message..."
-            className="w-full pl-4 pr-4 py-2.5 glass text-white rounded-full 
-              focus:outline-none focus:ring-2 focus:ring-chat-primary/50 transition-all duration-300
-              placeholder:text-white/50"
-          />
-        </div>
-        
-        <div className="hidden sm:flex items-center space-x-2">
-          <button type="button" className="text-chat-primary hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
-            <Link2 className="w-5 h-5" />
-          </button>
-          <button type="button" className="text-chat-primary hover:text-white transition-colors p-2 rounded-full hover:bg-white/5">
-            <Smile className="w-5 h-5" />
-          </button>
-        </div>
-        
-        <button
-          type="submit"
-          className="button-gradient p-2.5 rounded-full shadow-md transition-all duration-300
-            hover:shadow-glow active:scale-95 focus:outline-none"
-          disabled={!messageInput.trim()}
-        >
-          <Send className="w-4 h-4 text-white" />
-        </button>
       </div>
-    </form>
+      
+      <div className="flex justify-end mt-2">
+        <Button 
+          onClick={handleSend} 
+          disabled={!message.trim() || disabled} 
+          className="gap-1.5"
+        >
+          <Send size={16} />
+          <span>Send</span>
+        </Button>
+      </div>
+    </div>
   );
 };
-
-export default ChatInput;

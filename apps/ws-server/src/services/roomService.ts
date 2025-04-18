@@ -35,9 +35,9 @@ class RoomService {
     }
     user.rooms.splice(index, 1);
   }
-  public static async msgInRoom(roomId: string, ws: WebSocket, message: string ,imageURL?:string){
-    console.log("msgInRoom", roomId, ws, message);
-    await prismaClient.message.create({
+  public static async msgInRoom(roomId: string, ws: WebSocket, message: string ,userId:string,imageURL?:string){
+    console.log("msgInRoom", roomId, message);
+    const newMessage=await prismaClient.message.create({
       data: {
         room:{
           connect:{
@@ -47,7 +47,7 @@ class RoomService {
         text: message,
         author:{
           connect:{
-            id:users.find((u) => u.ws === ws)?.userid
+            id:userId
           }
         },
         imageURL:imageURL
@@ -58,18 +58,20 @@ class RoomService {
         u.ws.send(JSON.stringify({
          type:"message_in_room",
          message:message,
+         messageId:newMessage.id,
          roomId:roomId,
          imageURL:imageURL,
+         userId:userId
         })); 
        }
      });
     }
-  public static async reactInRoom(roomId: string, ws: WebSocket, messageId: string,reaction:string){
-    const userid= users.find((u) => u.ws === ws)?.userid;
+  public static async reactInRoom(roomId: string, ws: WebSocket, messageId: string,reaction:string,userId:string) {
     try {
+      console.log("reactInRoom", roomId, messageId, reaction,userId);
       await prismaClient.$transaction(async (prisma) => {
         const reactionInDb = await prisma.reaction.findUnique({
-          where: { authorId_messageId: { messageId, authorId: userid } },
+          where: { authorId_messageId: { messageId, authorId: userId } },
         });
     
         let updatedReaction = reaction;
@@ -88,7 +90,7 @@ class RoomService {
             data: {
               message: { connect: { id: messageId } },
               type: reaction,
-              author: { connect: { id: userid } },
+              author: { connect: { id: userId } },
             },
           });
         }

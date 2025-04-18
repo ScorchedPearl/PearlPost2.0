@@ -2,8 +2,10 @@ import React from "react";
 import { UserPlus } from "lucide-react";
 import { Button } from "@ui/components/ui/button";
 import UserAvatar from "./avatar";
+import { useUser } from "@providers/stateClient/userClient";
 
-const Suggestions = ({ user }) => {
+const Suggestions = () => {
+  const {currentUser:user}=useUser();
   return (
     <div className="glass-card slide-in-animation">
       <div className="p-4 border-b border-border">

@@ -27,6 +27,36 @@ class RoomService {
     });
     return rooms;
   }
+  public static async getRoomsById(userId: string) {
+    const rooms=await prismaClient.room.findMany({
+      orderBy: { 
+        messages: {
+          _count: "desc"
+        }
+       },
+      where:{
+        users:{
+          some:{
+            id:userId
+          }
+        }
+      },
+      include: {
+        messages: {
+         include:{
+          author:true,
+          reactions:{
+            include:{
+              author:true
+            }
+          }
+         }
+        },
+        users:true
+      }
+    })
+    return rooms
+  }
   public static async createRoom(
     payload: CreateRoomPayload,
     ctx: GraphqlContext

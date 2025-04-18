@@ -29,13 +29,14 @@ type Documents = {
     "#graphql\n  query GetSignedURLForImage($imageName: String!, $imageType: String!) {\n  getSignedUrlForImage(imageName: $imageName, imageType: $imageType)\n}\n": typeof types.GetSignedUrlForImageDocument,
     "#graphql\n  query GetSignedURLForVideo($videoName: String!, $videoType: String!) {\n  getSignedUrlForVideo(videoName: $videoName, videoType: $videoType)\n}\n": typeof types.GetSignedUrlForVideoDocument,
     "#graphql\n  query GetAllRooms {\n    getAllRooms {\n      id\n      users {\n        name\n        profileImageURL\n      }\n      messages {\n        text\n        id\n        reactions {\n          type\n          author {\n            name\n            profileImageURL\n          }\n        }\n        imageURL\n        createdAt\n        author {\n          name\n          profileImageURL\n        }\n      }\n      name\n      avatar\n    }\n  }\n": typeof types.GetAllRoomsDocument,
+    "#graphql\n    query GetRoomsById {\n    getRoomsById {\n      users {\n        name\n        profileImageURL\n      }\n      messages {\n        text\n        id\n        reactions {\n          type\n          author {\n            name\n            profileImageURL\n          }\n        }\n        imageURL\n        createdAt\n        author {\n          name\n          profileImageURL\n        }\n      }\n      name\n      avatar\n      id\n    } \n  }\n": typeof types.GetRoomsByIdDocument,
     "#graphql\n query GetAllStories {\n  getAllStories {\n    likes {\n      \n      user {\n        name\n      }\n    }\n    author {\n      email\n      id\n      name\n      profileImageURL\n      title\n    }\n    videoURL\n    imageURL\n    id\n    createdAt\n  }\n}\n": typeof types.GetAllStoriesDocument,
     "#graphql\nquery Query($email: String!, $password: String!) {\n  verifyCredentialsToken(email: $email, password: $password)\n}\n": typeof types.QueryDocument,
     "#graphql\n query GetCurrentUser {\n  getCurrentUser {\n    id\n    name\n    profileImageURL\n    title\n    email\n    posts {\n      content\n      likes {\n        user {\n          name\n        }\n      }\n      imageURL\n    }\n    recommendedUsers {\n      name\n      title\n      followers {\n        profileImageURL\n        name\n        title\n      }\n      profileImageURL\n    }\n    following {\n        name\n        profileImageURL\n        title\n        id\n    }\n    followers {\n      name\n      title\n      profileImageURL\n    }\n  }\n}\n": typeof types.GetCurrentUserDocument,
     "#graphql\n  query SendOtpEmail($email: String!, $otp: String!) {\n  sendOtpEmail(email: $email, otp: $otp)\n  }\n": typeof types.SendOtpEmailDocument,
     "#graphql\n  query GetChartData($userId: String!) {\n  getChartData(userId: $userId) {\n    monthlyData {\n      shares\n      name\n      likes\n      comments\n    }\n    weeklyData {\n      shares\n      name\n      likes\n      comments\n    }\n  }\n}\n": typeof types.GetChartDataDocument,
     "#graphql\n  query GetRecentActivity($userId: String!) {\n  getRecentActivity(userId: $userId) {\n    action\n    content\n    id\n    time\n    user {\n      username\n      name\n      avatar\n    }\n  }\n}\n": typeof types.GetRecentActivityDocument,
-    "#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n  }\n}\n": typeof types.GetAllUserDocument,
+    "#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n    id\n  }\n}\n": typeof types.GetAllUserDocument,
 };
 const documents: Documents = {
     "#graphql\n  mutation CreatePost($payload: CreatePostData!) {\n    createPost(payload: $payload) {\n      id\n    }\n}\n": types.CreatePostDocument,
@@ -53,13 +54,14 @@ const documents: Documents = {
     "#graphql\n  query GetSignedURLForImage($imageName: String!, $imageType: String!) {\n  getSignedUrlForImage(imageName: $imageName, imageType: $imageType)\n}\n": types.GetSignedUrlForImageDocument,
     "#graphql\n  query GetSignedURLForVideo($videoName: String!, $videoType: String!) {\n  getSignedUrlForVideo(videoName: $videoName, videoType: $videoType)\n}\n": types.GetSignedUrlForVideoDocument,
     "#graphql\n  query GetAllRooms {\n    getAllRooms {\n      id\n      users {\n        name\n        profileImageURL\n      }\n      messages {\n        text\n        id\n        reactions {\n          type\n          author {\n            name\n            profileImageURL\n          }\n        }\n        imageURL\n        createdAt\n        author {\n          name\n          profileImageURL\n        }\n      }\n      name\n      avatar\n    }\n  }\n": types.GetAllRoomsDocument,
+    "#graphql\n    query GetRoomsById {\n    getRoomsById {\n      users {\n        name\n        profileImageURL\n      }\n      messages {\n        text\n        id\n        reactions {\n          type\n          author {\n            name\n            profileImageURL\n          }\n        }\n        imageURL\n        createdAt\n        author {\n          name\n          profileImageURL\n        }\n      }\n      name\n      avatar\n      id\n    } \n  }\n": types.GetRoomsByIdDocument,
     "#graphql\n query GetAllStories {\n  getAllStories {\n    likes {\n      \n      user {\n        name\n      }\n    }\n    author {\n      email\n      id\n      name\n      profileImageURL\n      title\n    }\n    videoURL\n    imageURL\n    id\n    createdAt\n  }\n}\n": types.GetAllStoriesDocument,
     "#graphql\nquery Query($email: String!, $password: String!) {\n  verifyCredentialsToken(email: $email, password: $password)\n}\n": types.QueryDocument,
     "#graphql\n query GetCurrentUser {\n  getCurrentUser {\n    id\n    name\n    profileImageURL\n    title\n    email\n    posts {\n      content\n      likes {\n        user {\n          name\n        }\n      }\n      imageURL\n    }\n    recommendedUsers {\n      name\n      title\n      followers {\n        profileImageURL\n        name\n        title\n      }\n      profileImageURL\n    }\n    following {\n        name\n        profileImageURL\n        title\n        id\n    }\n    followers {\n      name\n      title\n      profileImageURL\n    }\n  }\n}\n": types.GetCurrentUserDocument,
     "#graphql\n  query SendOtpEmail($email: String!, $otp: String!) {\n  sendOtpEmail(email: $email, otp: $otp)\n  }\n": types.SendOtpEmailDocument,
     "#graphql\n  query GetChartData($userId: String!) {\n  getChartData(userId: $userId) {\n    monthlyData {\n      shares\n      name\n      likes\n      comments\n    }\n    weeklyData {\n      shares\n      name\n      likes\n      comments\n    }\n  }\n}\n": types.GetChartDataDocument,
     "#graphql\n  query GetRecentActivity($userId: String!) {\n  getRecentActivity(userId: $userId) {\n    action\n    content\n    id\n    time\n    user {\n      username\n      name\n      avatar\n    }\n  }\n}\n": types.GetRecentActivityDocument,
-    "#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n  }\n}\n": types.GetAllUserDocument,
+    "#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n    id\n  }\n}\n": types.GetAllUserDocument,
 };
 
 /**
@@ -139,6 +141,10 @@ export function graphql(source: "#graphql\n  query GetAllRooms {\n    getAllRoom
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "#graphql\n    query GetRoomsById {\n    getRoomsById {\n      users {\n        name\n        profileImageURL\n      }\n      messages {\n        text\n        id\n        reactions {\n          type\n          author {\n            name\n            profileImageURL\n          }\n        }\n        imageURL\n        createdAt\n        author {\n          name\n          profileImageURL\n        }\n      }\n      name\n      avatar\n      id\n    } \n  }\n"): (typeof documents)["#graphql\n    query GetRoomsById {\n    getRoomsById {\n      users {\n        name\n        profileImageURL\n      }\n      messages {\n        text\n        id\n        reactions {\n          type\n          author {\n            name\n            profileImageURL\n          }\n        }\n        imageURL\n        createdAt\n        author {\n          name\n          profileImageURL\n        }\n      }\n      name\n      avatar\n      id\n    } \n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "#graphql\n query GetAllStories {\n  getAllStories {\n    likes {\n      \n      user {\n        name\n      }\n    }\n    author {\n      email\n      id\n      name\n      profileImageURL\n      title\n    }\n    videoURL\n    imageURL\n    id\n    createdAt\n  }\n}\n"): (typeof documents)["#graphql\n query GetAllStories {\n  getAllStories {\n    likes {\n      \n      user {\n        name\n      }\n    }\n    author {\n      email\n      id\n      name\n      profileImageURL\n      title\n    }\n    videoURL\n    imageURL\n    id\n    createdAt\n  }\n}\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -163,7 +169,7 @@ export function graphql(source: "#graphql\n  query GetRecentActivity($userId: St
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n  }\n}\n"): (typeof documents)["#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n  }\n}\n"];
+export function graphql(source: "#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n    id\n  }\n}\n"): (typeof documents)["#graphql\n  query GetAllUser {\n  getAllUser {\n    name\n    profileImageURL\n    title\n    id\n  }\n}\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

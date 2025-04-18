@@ -4,11 +4,12 @@ import cors from "cors"
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import JWTService from "../services/jwtService";
+import { Express } from "express";
 import { User } from "./user";
 import { Post } from "./post";
 import { Room } from "./room";
 import { Story } from "./story";
-export async function initServer(){
+export async function initServer(): Promise<Express>{
   const app=express();
   app.use(cors());
   app.use(bodyParser.json());
